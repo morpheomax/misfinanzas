@@ -11,6 +11,7 @@
             </a>
         </div>
 
+
         <!-- Versión Móvil: Tarjetas -->
         <div class="md:hidden">
             @foreach ($ingresos as $ingreso)

@@ -56,6 +56,7 @@
 
             </div>
 
+
             <!-- Botones -->
             <div class="flex justify-between mt-6">
                 <!-- Botón Volver -->

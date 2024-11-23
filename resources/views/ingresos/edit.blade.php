@@ -10,6 +10,7 @@
             <!-- Contenedor de campos organizados en columna para pantallas pequeñas, en fila para pantallas medianas y grandes -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
 
+
                 <!-- Nombre -->
                 <div class="mb-4">
                     <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre</label>

@@ -9,6 +9,7 @@
                     <span class="font-medium">Nombre:</span>
                     <span>{{ $ingreso->nombre }}</span>
                 </li>
+
                 <li class="flex justify-between text-gray-600">
                     <span class="font-medium">Categoría:</span>
                     <span>{{ $ingreso->categoria }}</span>
