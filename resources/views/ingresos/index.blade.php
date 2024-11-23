@@ -12,6 +12,7 @@
         </div>
 
 
+
         <!-- Versión Móvil: Tarjetas -->
         <div class="md:hidden">
             @foreach ($ingresos as $ingreso)
@@ -92,4 +93,66 @@
             </div>
         </div>
     </div>
+
+    {{--
+    <!-- Tabla de ingresos por mes y categoría -->
+    <h3>Resumen de Ingresos por Mes y Categoría</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Año</th>
+                <th>Mes</th>
+                <th>Categoría</th>
+                <th>Total Monto</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($ingresosPorMesYCategoria as $ingreso)
+                <tr>
+                    <td>{{ $ingreso->anio }}</td>
+                    <td>{{ \Carbon\Carbon::createFromFormat('m', $ingreso->mes)->format('F') }}</td>
+                    <td>{{ $ingreso->categoria }}</td>
+                    <td>{{ number_format($ingreso->total_monto, 2) }}</td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+
+    <!-- Acumulado Anual -->
+    <h3>Acumulado Anual</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Año</th>
+                <th>Total Monto</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($acumuladoAnual as $acumulado)
+                <tr>
+                    <td>{{ $acumulado->anio }}</td>
+                    <td>{{ number_format($acumulado->total_monto, 2) }}</td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+
+    <!-- Ingresos de este mes -->
+    <h3>Ingresos del Mes Actual: {{ \Carbon\Carbon::now()->format('F') }}</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Categoría</th>
+                <th>Total Monto</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($ingresos->whereMonth('fecha', $mesActual) as $ingreso)
+                <tr>
+                    <td>{{ $ingreso->categoria }}</td>
+                    <td>{{ number_format($ingreso->monto, 2) }}</td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table> --}}
 @endsection
