@@ -12,29 +12,81 @@ class IngresoController extends Controller
     use AuthorizesRequests; // Incluir el trait para usar authorize
 
     // Mostrar lista de ingresos
-    public function index()
+    public function index(Request $request)
     {
-        // Usar Auth::id() para mantener consistencia
+        // Ingresos del usuario paginados
         $ingresos = Ingreso::where('user_id', Auth::id())->paginate(10);
 
-        // Cálculos por mes, año y categoría
-        $mesActual = now()->format('m');
-        $anioActual = now()->format('Y');
-
         // Sumar ingresos por año, mes y categoría
-        $ingresosPorMesYCategoria = Ingreso::where('user_id', Auth::id())
-            ->selectRaw('YEAR(fecha) as anio, MONTH(fecha) as mes, categoria, SUM(monto) as total_monto')
-            ->groupBy('anio', 'mes', 'categoria')
-            ->get();
+        $ingresosPorMesYCategoria = $this->ingresosPorMesYCategoria();
+
+        // ingresos agrupados como tabla
+        $ingresosAgrupados = $this->ingresosPorMesYCategoriaAgrupados();
 
         // Sumar ingresos por acumulado anual
-        $acumuladoAnual = Ingreso::where('user_id', Auth::id())
-            ->selectRaw('YEAR(fecha) as anio, SUM(monto) as total_monto')
-            ->groupBy('anio')
+        $acumuladoAnual = $this->acumuladoAnual();
+
+        $query = Ingreso::where('user_id', Auth::id());
+
+        // Filtrar por fechas
+        if ($request->filled('desde') && $request->filled('hasta')) {
+            $query->whereBetween('fecha', [$request->desde, $request->hasta]);
+        }
+
+        // Filtrar por palabra clave
+        if ($request->filled('buscar')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('nombre', 'like', '%' . $request->buscar . '%')
+                    ->orWhere('nombre', 'like', '%' . $request->buscar . '%');
+            });
+        }
+
+        // Obtener resultados paginados
+        $ingresos = $query->paginate(10);
+
+        return view('ingresos.index', compact('ingresos', 'ingresosPorMesYCategoria', 'ingresosAgrupados', 'acumuladoAnual'));
+
+    }
+
+    // Calcular ingresos por mes y categoría
+    private function ingresosPorMesYCategoria()
+    {
+        return Ingreso::where('user_id', Auth::id())
+            ->selectRaw('YEAR(fecha) as anio, MONTH(fecha) as mes, categoria, SUM(monto) as total_monto')
+            ->groupBy('anio', 'mes', 'categoria')
+            ->orderBy('anio', 'desc')
+            ->orderBy('mes', 'desc')
+            ->get();
+    }
+
+// Calcular ingresos por mes y categoría agrupados vista de table
+    private function ingresosPorMesYCategoriaAgrupados()
+    {
+        $ingresos = Ingreso::where('user_id', Auth::id())
+            ->selectRaw('YEAR(fecha) as anio, MONTH(fecha) as mes, categoria, SUM(monto) as total_monto')
+            ->groupBy('anio', 'mes', 'categoria')
+            ->orderBy('anio', 'desc')
+            ->orderBy('categoria', 'asc')
             ->get();
 
-        return view('ingresos.index', compact('ingresos', 'mesActual', 'anioActual', 'acumuladoAnual', 'ingresosPorMesYCategoria'));
+        // Formatear los datos
+        $datosAgrupados = [];
+        foreach ($ingresos as $ingreso) {
+            $datosAgrupados[$ingreso->anio][$ingreso->categoria][$ingreso->mes] = $ingreso->total_monto;
+        }
 
+        return $datosAgrupados;
+
+    }
+
+    // Calcular ingresos por acumulado anual
+    private function acumuladoAnual()
+    {
+        return Ingreso::where('user_id', Auth::id())
+            ->selectRaw('YEAR(fecha) as anio, SUM(monto) as total_monto')
+            ->groupBy('anio')
+            ->orderBy('anio', 'desc')
+            ->get();
     }
 
     // Mostrar formulario de creación
@@ -98,5 +150,47 @@ class IngresoController extends Controller
         $ingreso->delete();
 
         return redirect()->route('ingresos.index')->with('success', 'Ingreso eliminado correctamente.');
+    }
+
+    // Búsqueda de ingresos por palabra clave
+    public function search(Request $request)
+    {
+        $query = $request->input('query');
+
+        $ingresos = Ingreso::where('user_id', Auth::id())
+            ->where(function ($q) use ($query) {
+                $q->where('nombre', 'like', '%' . $query . '%')
+                    ->orWhere('categoria', 'like', '%' . $query . '%');
+            })
+            ->paginate(10);
+
+        return view('ingresos.index', compact('ingresos'))->with('query', $query);
+    }
+
+    // Filtrar ingresos por rango de fechas
+    public function filterByDate(Request $request)
+    {
+        $validated = $request->validate([
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+        ]);
+
+        $ingresos = Ingreso::where('user_id', Auth::id())
+            ->whereBetween('fecha', [$validated['start_date'], $validated['end_date']])
+            ->paginate(10);
+
+        return view('ingresos.index', compact('ingresos'));
+    }
+
+    // Duplicar ingresos
+    public function duplicate(Ingreso $ingreso)
+    {
+        $this->authorize('create', $ingreso);
+
+        $newIngreso = $ingreso->replicate();
+        $newIngreso->fecha = now(); // Actualizar la fecha si es necesario
+        $newIngreso->save();
+
+        return redirect()->route('ingresos.index')->with('success', 'Ingreso duplicado correctamente.');
     }
 }

@@ -4,7 +4,7 @@
 
 
 @section('content')
-    <!-- Hero Section -->
+
     <!-- Hero Section -->
     <header class="relative bg-gradient-to-r from-blue-500 to-teal-500 text-white py-32 text-center">
         <div class="container mx-auto px-4 relative z-10">

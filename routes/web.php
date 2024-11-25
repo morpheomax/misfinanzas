@@ -21,4 +21,11 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('egresos', EgresoController::class);
     Route::resource('categorias', CategoriaController::class);
     Route::resource('metas', MetaController::class);
+
+    // Rutas adicionales para las funcionalidades específicas de ingresos
+
+    Route::post('ingresos/search', [IngresoController::class, 'search'])->name('ingresos.search');
+    Route::post('ingresos/filter-by-date', [IngresoController::class, 'filterByDate'])->name('ingresos.filterByDate');
+    Route::post('ingresos/bulk-delete', [IngresoController::class, 'bulkDelete'])->name('ingresos.bulk-delete');
+    Route::post('ingresos/duplicate/{ingreso}', [IngresoController::class, 'duplicate'])->name('ingresos.duplicate');
 });

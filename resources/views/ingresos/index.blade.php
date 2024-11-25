@@ -2,13 +2,77 @@
 
 @section('content')
     <div class="container mx-auto p-4">
+
+        {{-- RESUMEN INGRESOS --}}
+
+        <h2 class="text-2xl font-semibold my-6 text-gray-800 text-center ">Resumen de Ingresos</h2>
+
+        <div class="flex flex-col md:flex-row gap-4 mx-auto">
+            <!-- Mostrar acumulado anual -->
+            @component('components.acumulado_anual', ['acumuladoAnual' => $acumuladoAnual])
+            @endcomponent
+            <!-- Mostrar ingresos por año, mes y categoría -->
+            {{-- @component('components.ingresos_por_categoria', ['ingresosPorMesYCategoria' => $ingresosPorMesYCategoria])
+            @endcomponent --}}
+
+            <!-- Mostrar ingresos por año, mes y categoría -->
+            @component('components.ingresos_por_categoria_mes', ['ingresosAgrupados' => $ingresosAgrupados])
+            @endcomponent
+
+        </div>
+
+        {{-- <div class="flex flex-col md:flex-row gap-4 mx-auto">
+
+
+            <!-- Mostrar ingresos por año, mes y categoría -->
+            @component('components.ingresos_por_categoria_mes', ['ingresosAgrupados' => $ingresosAgrupados])
+            @endcomponent
+        </div> --}}
+
+        {{-- Filtrado de datos de tabla --}}
+        <div class="my-6">
+            <h3 class="text-2xl font-semibold text-gray-800 text-center">Filtrar Ingresos</h3>
+            <form action="{{ route('ingresos.index') }}" method="GET" class="flex flex-wrap gap-4">
+                <!-- Filtro por fechas -->
+                <div>
+                    <label for="desde" class="block text-sm font-medium text-gray-700">Desde</label>
+                    <input type="date" name="desde" id="desde" value="{{ request('desde') }}"
+                        class="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label for="hasta" class="block text-sm font-medium text-gray-700">Hasta</label>
+                    <input type="date" name="hasta" id="hasta" value="{{ request('hasta') }}"
+                        class="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-indigo-500">
+                </div>
+
+                <!-- Filtro por palabra clave -->
+                <div class="flex-grow">
+                    <label for="buscar" class="block text-sm font-medium text-gray-700">Buscar</label>
+                    <input type="text" name="buscar" id="buscar" value="{{ request('buscar') }}"
+                        placeholder="Buscar ingresos..."
+                        class="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-indigo-500">
+                </div>
+
+                <!-- Botón para aplicar filtros -->
+                <div class="self-end">
+                    <button type="submit"
+                        class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition duration-200">
+                        Filtrar
+                    </button>
+                </div>
+            </form>
+        </div>
+
+
         <!-- Botón para agregar un nuevo ingreso -->
-        <div class="flex justify-between items-center mb-6">
-            <h1 class="text-3xl font-semibold text-gray-800 text-center">Ingresos</h1>
+        <div class="flex justify-evenly items-center mb-6">
+            <h1 class="text-3xl font-semibold text-gray-800 my-6">Lista de Ingresos</h1>
             <a href="{{ route('ingresos.create') }}"
-                class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition duration-200">
+                class="bg-lime-500 text-white px-6 py-2 rounded-lg hover:bg-lime-600 transition duration-200">
                 Agregar Ingreso
             </a>
+
+
         </div>
 
 
@@ -93,66 +157,19 @@
             </div>
         </div>
     </div>
+    {{-- Nuevos componentes --}}
+    <div>
 
-    {{--
-    <!-- Tabla de ingresos por mes y categoría -->
-    <h3>Resumen de Ingresos por Mes y Categoría</h3>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Año</th>
-                <th>Mes</th>
-                <th>Categoría</th>
-                <th>Total Monto</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($ingresosPorMesYCategoria as $ingreso)
-                <tr>
-                    <td>{{ $ingreso->anio }}</td>
-                    <td>{{ \Carbon\Carbon::createFromFormat('m', $ingreso->mes)->format('F') }}</td>
-                    <td>{{ $ingreso->categoria }}</td>
-                    <td>{{ number_format($ingreso->total_monto, 2) }}</td>
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
 
-    <!-- Acumulado Anual -->
-    <h3>Acumulado Anual</h3>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Año</th>
-                <th>Total Monto</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($acumuladoAnual as $acumulado)
-                <tr>
-                    <td>{{ $acumulado->anio }}</td>
-                    <td>{{ number_format($acumulado->total_monto, 2) }}</td>
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
 
-    <!-- Ingresos de este mes -->
-    <h3>Ingresos del Mes Actual: {{ \Carbon\Carbon::now()->format('F') }}</h3>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Categoría</th>
-                <th>Total Monto</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($ingresos->whereMonth('fecha', $mesActual) as $ingreso)
-                <tr>
-                    <td>{{ $ingreso->categoria }}</td>
-                    <td>{{ number_format($ingreso->monto, 2) }}</td>
-                </tr>
-            @endforeach
-        </tbody>
-    </table> --}}
+
+
+
+
+
+        <!-- Duplicar ingresos -->
+        {{-- @component('components.duplicar_ingreso', ['ingreso' => $ingreso])
+        @endcomponent --}}
+
+    </div>
 @endsection
