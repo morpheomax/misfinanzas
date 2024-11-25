@@ -1,46 +1,36 @@
-# Proyecto: Ingresos por Categoría
+# Proyecto de Gestión de Finanzas Personales
 
-Este proyecto es una aplicación que permite visualizar y gestionar los ingresos de un usuario por categoría, organizados por mes y año. Los ingresos se agrupan y suman por categorías, proporcionando una vista clara y detallada de los ingresos en un formato de tabla dinámica.
-
-## Descripción
-
-La aplicación muestra un resumen de los ingresos de un usuario agrupados por:
-
--   Año
--   Mes
--   Categoría
-
-Además, ofrece un desglose mensual de los ingresos, permitiendo ver de forma clara los montos totales por cada mes del año.
+Este proyecto es una aplicación web diseñada para gestionar las finanzas personales de los usuarios. Permite realizar un seguimiento de los ingresos, gastos y otros aspectos financieros de manera sencilla y eficiente. Con una interfaz intuitiva y un enfoque en la organización, los usuarios pueden visualizar, categorizar y analizar sus movimientos financieros a lo largo del tiempo.
 
 ## Características
 
--   Visualización de los ingresos por categoría en una tabla dinámica.
--   Cada fila corresponde a una categoría de ingresos.
--   Las columnas representan los meses del año (de enero a diciembre).
--   El monto total por categoría se calcula sumando los ingresos de cada mes.
--   Los datos se extraen dinámicamente desde la base de datos y se presentan en formato de tabla.
+-   **Registro de Ingresos y Gastos:** Los usuarios pueden registrar sus ingresos y gastos, con la opción de clasificarlos en categorías personalizadas.
+-   **Visualización de Movimientos:** Los movimientos se muestran de manera clara y ordenada, permitiendo al usuario ver sus finanzas en cualquier período de tiempo.
+-   **Análisis de Categorías:** La aplicación ofrece resúmenes detallados de los ingresos y gastos por categorías, lo que ayuda a los usuarios a entender mejor en qué están gastando o ganando más.
+-   **Resumen Financiero Mensual:** Los usuarios pueden visualizar un resumen de sus finanzas de cada mes, con un desglose de los montos por categoría.
+-   **Reportes Exportables:** Es posible exportar reportes de los ingresos y gastos en formatos como PDF o CSV para su análisis externo.
+-   **Interfaz Responsive:** La aplicación está diseñada para ser accesible desde cualquier dispositivo, asegurando una experiencia fluida tanto en escritorio como en móviles.
 
-## Tecnologías utilizadas
+## Tecnologías Utilizadas
 
--   **PHP** (Laravel)
--   **Blade Templates** para la vista
--   **MySQL** (base de datos para almacenar los ingresos)
--   **Tailwind CSS** para el diseño y estilo de la interfaz
+Este proyecto utiliza una combinación de tecnologías modernas para su desarrollo:
+
+-   **Backend:**
+    -   **Laravel:** Framework PHP para el desarrollo del backend y la gestión de bases de datos.
+    -   **MySQL:** Base de datos relacional para almacenar los registros de ingresos, gastos y usuarios.
+-   **Frontend:**
+    -   **Blade:** Motor de plantillas de Laravel para renderizar vistas dinámicas.
+    -   **TailwindCSS:** Framework de CSS para el diseño responsive y estilizado de la interfaz de usuario.
+    -   **JavaScript:** Para mejorar la interactividad en la interfaz y validación de formularios.
+-   **Otras tecnologías:**
+    -   **Git:** Control de versiones.
+    -   **Composer:** Para la gestión de dependencias de PHP.
 
 ## Instalación
 
-### Requisitos previos
+1. **Clonar el repositorio:**
 
-Asegúrate de tener los siguientes programas instalados en tu máquina:
-
--   PHP >= 7.4
--   Composer
--   MySQL
--   Laravel 8 o superior
-
-### Pasos de instalación
-
-1. Clona el repositorio:
     ```bash
-    git clone https://github.com/tu_usuario/nombre_del_repositorio.git
+    git clone https://github.com/tu_usuario/proyecto-finanzas-personales.git
+    cd proyecto-finanzas-personales
     ```
