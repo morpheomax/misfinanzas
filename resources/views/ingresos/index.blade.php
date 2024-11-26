@@ -11,13 +11,17 @@
             <!-- Mostrar acumulado anual -->
             @component('components.acumulado_anual', ['acumuladoAnual' => $acumuladoAnual])
             @endcomponent
-            <!-- Mostrar ingresos por año, mes y categoría -->
-            {{-- @component('components.ingresos_por_categoria', ['ingresosPorMesYCategoria' => $ingresosPorMesYCategoria])
-            @endcomponent --}}
 
-            <!-- Mostrar ingresos por año, mes y categoría -->
-            @component('components.ingresos_por_categoria_mes', ['ingresosAgrupados' => $ingresosAgrupados])
+            @component('components.ingresos_por_categoria_mes', [
+                'datosAgrupados' => $ingresosAgrupados['datosAgrupados'],
+                'totalesPorCategoria' => $ingresosAgrupados['totalesPorCategoria'], // No es necesario desreferenciar
+                'meses' => $ingresosAgrupados['meses'],
+                'anio' => $ingresosAgrupados['anio'],
+                'aniosDisponibles' => $ingresosAgrupados['aniosDisponibles'],
+            ])
             @endcomponent
+
+
 
         </div>
 
