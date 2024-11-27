@@ -26,8 +26,6 @@ Route::middleware(['auth'])->group(function () {
 
     Route::post('ingresos/search', [IngresoController::class, 'search'])->name('ingresos.search');
     Route::post('ingresos/filter-by-date', [IngresoController::class, 'filterByDate'])->name('ingresos.filterByDate');
-    // Route::get('/ingresos/summary', [IngresoController::class, 'index'])->name('ingresos.summary');
-
     Route::post('ingresos/bulk-delete', [IngresoController::class, 'bulkDelete'])->name('ingresos.bulk-delete');
     Route::post('ingresos/duplicate/{ingreso}', [IngresoController::class, 'duplicate'])->name('ingresos.duplicate');
 });

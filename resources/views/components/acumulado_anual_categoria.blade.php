@@ -7,13 +7,16 @@
             <thead class="  ">
                 <tr class="border-gray-50 text-center">
                     <th class="px-4 py-2 border-b border-gray-50  ">Año</th>
+                    <th class="px-4 py-2 border-b border-gray-50 ">Categoría</th>
+
                     <th class="px-4 py-2 border-b border-gray-50 ">Total</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach ($acumuladoAnual as $ingreso)
+                @foreach ($acumuladoAnualCategoria as $ingreso)
                     <tr class="hover:bg-gray-50 border-gray-50 ">
                         <td class="px-4 py-2 border-r border-gray-50">{{ $ingreso->anio }}</td>
+                        <td class="px-4 py-2 border-b ">{{ $ingreso->categoria }}</td>
                         <td class="px-4 py-2  text-xl text-right font-bold">
                             ${{ number_format($ingreso->total_monto, 0, '', '.') }}
                         </td>
@@ -25,6 +28,6 @@
 
     <!-- Paginación -->
     <div class="mt-4">
-        {{ $acumuladoAnual->links() }} <!-- Muestra los enlaces de paginación -->
+        {{ $acumuladoAnualCategoria->links() }} <!-- Muestra los enlaces de paginación -->
     </div>
 </div>

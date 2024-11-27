@@ -14,37 +14,6 @@ class IngresoController extends Controller
     // Mostrar lista de ingresos
     public function index(Request $request)
     {
-        // // Ingresos del usuario paginados
-        // $ingresos = Ingreso::where('user_id', Auth::id())->paginate(10);
-
-        // // Sumar ingresos por año, mes y categoría
-        // $ingresosPorMesYCategoria = $this->ingresosPorMesYCategoria();
-
-        // // ingresos agrupados como tabla
-        // $ingresosAgrupados = $this->ingresosPorMesYCategoriaAgrupados($request);
-
-        // // Sumar ingresos por acumulado anual
-        // $acumuladoAnual = $this->acumuladoAnual();
-
-        // $query = Ingreso::where('user_id', Auth::id());
-
-        // // Filtrar por fechas
-        // if ($request->filled('desde') && $request->filled('hasta')) {
-        //     $query->whereBetween('fecha', [$request->desde, $request->hasta]);
-        // }
-
-        // // Filtrar por palabra clave
-        // if ($request->filled('buscar')) {
-        //     $query->where(function ($q) use ($request) {
-        //         $q->where('nombre', 'like', '%' . $request->buscar . '%')
-        //             ->orWhere('nombre', 'like', '%' . $request->buscar . '%');
-        //     });
-        // }
-
-        // // Obtener resultados paginados
-        // $ingresos = $query->paginate(10);
-
-        // return view('ingresos.index', 'ingresos.summary', compact('ingresos', 'ingresosPorMesYCategoria', 'ingresosAgrupados', 'acumuladoAnual'));
 
         // Obtener query base de ingresos del usuario
         $query = Ingreso::where('user_id', Auth::id());
@@ -97,9 +66,10 @@ class IngresoController extends Controller
         $totalesPorCategoria = $ingresosAgrupados['totalesPorCategoria']; // Extraemos el valor de 'totalesPorCategoria'
         $ingresosPorMesYCategoria = $ingresosAgrupados['datosAgrupados']; // Este es el agrupado de ingresos
         $acumuladoAnual = $this->acumuladoAnual();
+        $acumuladoAnualCategoria = $this->acumuladoAnualCategoria();
 
         // Pasar todos los datos necesarios a la vista
-        return view('ingresos.index', compact('ingresos', 'ingresosPorMesYCategoria', 'ingresosAgrupados', 'anio', 'aniosDisponibles', 'meses', 'acumuladoAnual', 'totalesPorCategoria'));
+        return view('ingresos.index', compact('ingresos', 'ingresosPorMesYCategoria', 'ingresosAgrupados', 'anio', 'aniosDisponibles', 'meses', 'acumuladoAnual', 'acumuladoAnualCategoria', 'totalesPorCategoria'));
 
     }
 
@@ -107,6 +77,7 @@ class IngresoController extends Controller
     private function ingresosPorMesYCategoria()
     {
         return Ingreso::where('user_id', Auth::id())
+
             ->selectRaw('YEAR(fecha) as anio, MONTH(fecha) as mes, categoria, SUM(monto) as total_monto')
             ->groupBy('anio', 'mes', 'categoria')
             ->orderBy('anio', 'desc')
@@ -177,6 +148,18 @@ class IngresoController extends Controller
         return Ingreso::where('user_id', Auth::id())
             ->selectRaw('YEAR(fecha) as anio, SUM(monto) as total_monto')
             ->groupBy('anio')
+            ->orderBy('anio', 'desc')
+            ->paginate(4); // Paginación de 4 años por página
+
+    }
+    // Calcular ingresos por acumulado anual
+    private function acumuladoAnualCategoria()
+    {
+
+        return Ingreso::where('user_id', Auth::id())
+
+            ->selectRaw('YEAR(fecha) as anio, categoria, SUM(monto) as total_monto')
+            ->groupBy('anio', 'categoria')
             ->orderBy('anio', 'desc')
             ->paginate(4); // Paginación de 4 años por página
 

@@ -19,7 +19,7 @@
 
 </head>
 
-<body class="flex flex-col min-h-screen">
+<body class="flex flex-col min-h-screen bg-super-blanco">
 
     <!-- Navbar -->
     @include('components.navbar')
