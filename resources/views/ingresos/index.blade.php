@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', 'Registro de Ingresos')
+
 @section('content')
     <div class="container mx-auto p-4">
 

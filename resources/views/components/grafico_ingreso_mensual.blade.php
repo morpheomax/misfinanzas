@@ -1,4 +1,4 @@
-<div class="w-full mx-auto min-h-[400px] bg-white shadow-lg rounded-2xl p-4">
+<div class="w-full mx-auto  bg-white shadow-lg rounded-2xl p-4">
     <canvas id="graficoMensual"></canvas>
 </div>
 
@@ -7,6 +7,7 @@
         const ctx = document.getElementById('graficoMensual').getContext('2d');
         const graficoMensual = new Chart(ctx, {
             type: 'bar',
+
             data: {
                 labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto',
                     'Septiembre',
@@ -40,6 +41,11 @@
                 scales: {
                     y: {
                         beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Ingresos'
+                        },
+
                         ticks: {
                             callback: function(value) {
                                 return value.toLocaleString(

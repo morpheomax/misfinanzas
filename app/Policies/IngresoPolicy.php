@@ -7,61 +7,49 @@ use App\Models\User;
 
 class IngresoPolicy
 {
-    /**
-     * Determine whether the user can view any models.
-     */
+
     public function viewAny(User $user): bool
     {
-        //
-    }
-
-    /**
-     * Determine whether the user can view the model.
-     */
-    public function view(User $user, Ingreso $ingreso): bool
-    {
-
-        return $this->update($user, $ingreso);
-    }
-
-    /**
-     * Determine whether the user can create models.
-     */
-    public function create(User $user): bool
-    {
+        // Si deseas permitir que cualquier usuario vea los ingresos, retorna true
         return true;
     }
 
-    /**
-     * Determine whether the user can update the model.
-     */
-    public function update(User $user, Ingreso $ingreso): bool
+    public function create(User $user): bool
     {
-        return $ingreso->user_id === $user->id;
+        // Si deseas permitir que cualquier usuario cree ingresos, retorna true
+        return true;
     }
 
-    /**
-     * Determine whether the user can delete the model.
-     */
-    public function delete(User $user, Ingreso $ingreso): bool
-    {
-        //
-        return $this->update($user, $ingreso);
-    }
-
-    /**
-     * Determine whether the user can restore the model.
-     */
     public function restore(User $user, Ingreso $ingreso): bool
     {
-        //
+        // El usuario puede restaurar el modelo si es el propietario o un administrador
+        return $user->is_admin || $ingreso->user_id === $user->id;
     }
 
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(User $user, Ingreso $ingreso): bool
+    public function view(User $user, Ingreso $ingreso)
     {
-        //
+        // Lógica más específica para verificar si el usuario puede ver el ingreso
+        return $ingreso->project->users->contains($user) || $user->is_admin;
     }
+
+    public function update(User $user, Ingreso $ingreso)
+    {
+        return $user->id === $ingreso->user_id;
+    }
+
+    public function delete(User $user, Ingreso $ingreso)
+    {
+        return $this->canUpdateOrDelete($user, $ingreso);
+    }
+
+    public function forceDelete(User $user, Ingreso $ingreso)
+    {
+        return $this->canUpdateOrDelete($user, $ingreso);
+    }
+
+    private function canUpdateOrDelete(User $user, Ingreso $ingreso)
+    {
+        return $user->is_admin || $ingreso->user_id === $user->id;
+    }
+
 }

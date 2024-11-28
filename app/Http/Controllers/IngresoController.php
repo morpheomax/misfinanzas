@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Ingreso;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class IngresoController extends Controller
 {
+    use AuthorizesRequests;
     // Mostrar lista de ingresos
     public function index(Request $request)
     {
@@ -103,13 +105,13 @@ class IngresoController extends Controller
             ->orderBy('categoria')
             ->get();
 
-        $datosAgrupados = [];
-        $totalesPorCategoria = [];
+        $datosAgrupados = $ingresos->groupBy('categoria')->map(function ($grupo) {
+            return $grupo->keyBy('mes')->pluck('total_monto');
+        });
 
-        foreach ($ingresos as $ingreso) {
-            $datosAgrupados[$ingreso->categoria][$ingreso->mes] = $ingreso->total_monto;
-            $totalesPorCategoria[$ingreso->categoria] = ($totalesPorCategoria[$ingreso->categoria] ?? 0) + $ingreso->total_monto;
-        }
+        $totalesPorCategoria = $ingresos->groupBy('categoria')->map(function ($grupo) {
+            return $grupo->sum('total_monto');
+        });
 
         return ['datosAgrupados' => $datosAgrupados, 'totalesPorCategoria' => $totalesPorCategoria];
     }
@@ -122,7 +124,7 @@ class IngresoController extends Controller
             ->selectRaw('YEAR(fecha) as year, SUM(monto) as total_monto')
             ->groupBy('year')
             ->orderBy('year', 'desc')
-            ->paginate(10);
+            ->paginate(4);
     }
 
     // Calcular acumulado anual por categoría
@@ -160,20 +162,22 @@ class IngresoController extends Controller
     // Graficar totales
     private function calcularTotalesMensuales($anio)
     {
-        // Obtenemos los ingresos del año seleccionado y agrupamos por mes
+        // Obtenemos los ingresos del año seleccionado del usuario logueado y los agrupamos por mes
         $totalesMensuales = Ingreso::selectRaw('MONTH(fecha) as mes, SUM(monto) as total')
             ->whereYear('fecha', $anio)
+            ->where('user_id', Auth::id()) // Filtramos por el ID del usuario logueado
             ->groupBy('mes')
             ->orderBy('mes')
             ->pluck('total', 'mes');
 
-        // Crear un array con 0 para todos los meses
+        // Crear un array con 0 para todos los meses, si no hay datos para ese mes
         $meses = collect(range(1, 12))->mapWithKeys(function ($mes) use ($totalesMensuales) {
             return [$mes => $totalesMensuales->get($mes, 0)];
         });
 
         return $meses;
     }
+
     // Mostrar formulario de creación
     public function create()
     {
@@ -199,6 +203,7 @@ class IngresoController extends Controller
     // Mostrar ingreso
     public function show(Ingreso $ingreso)
     {
+        $validated['user_id'] = Auth::id();
         $this->authorize('view', $ingreso);
         return view('ingresos.show', compact('ingreso'));
     }
@@ -206,23 +211,32 @@ class IngresoController extends Controller
     // Editar ingreso
     public function edit(Ingreso $ingreso)
     {
+        // Autorizar al usuario antes de permitirle editar el registro
         $this->authorize('update', $ingreso);
+
+        // Si la autorización pasa, se pasa el ingreso a la vista
         return view('ingresos.edit', compact('ingreso'));
     }
 
     // Actualizar ingreso
     public function update(Request $request, Ingreso $ingreso)
     {
-        $this->authorize('update', $ingreso);
-        $validated = $request->validate([
+        // Validar los datos que llegan del formulario
+        $validatedData = $request->validate([
             'nombre' => 'required|string|max:255',
             'categoria' => 'required|string|max:255',
-            'monto' => 'required|numeric|min:0',
+            'monto' => 'required|numeric',
             'fecha' => 'required|date',
         ]);
 
-        $ingreso->update($validated);
-        return redirect()->route('ingresos.index')->with('success', 'Ingreso actualizado exitosamente.');
+        // Autorización para actualizar el ingreso
+        $this->authorize('update', $ingreso); // Verificamos si el usuario tiene permiso para actualizar
+
+        // Actualizar el ingreso con los datos validados
+        $ingreso->update($validatedData);
+
+        // Redirigir a la lista de ingresos con un mensaje de éxito
+        return redirect()->route('ingresos.index')->with('success', 'Ingreso actualizado correctamente');
     }
 
     // Eliminar ingreso

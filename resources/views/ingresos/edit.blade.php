@@ -3,13 +3,13 @@
 @section('content')
     <div class="container mx-auto p-6">
         <h1 class="text-2xl font-semibold mb-6 text-gray-800">Editar Ingreso</h1>
+        <!-- Aquí la ruta es correcta y @method('PUT') es necesaria para indicar la actualización -->
         <form action="{{ route('ingresos.update', $ingreso->id) }}" method="POST" class="bg-white p-6 rounded-lg shadow-md">
             @csrf
-            @method('PUT')
+            @method('PUT') <!-- Método PUT para actualizar el recurso -->
 
             <!-- Contenedor de campos organizados en columna para pantallas pequeñas, en fila para pantallas medianas y grandes -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-
 
                 <!-- Nombre -->
                 <div class="mb-4">
