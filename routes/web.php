@@ -13,9 +13,6 @@ Route::get('/', function () {
 
 Auth::routes();
 
-// Rutas agrupadas por autenticación
-// routes/web.php
-
 Route::middleware(['auth'])->group(function () {
     Route::resource('ingresos', IngresoController::class);
     Route::resource('egresos', EgresoController::class);
