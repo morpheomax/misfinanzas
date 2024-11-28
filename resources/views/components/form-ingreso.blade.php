@@ -1,4 +1,5 @@
-<form action="{{ route('ingresos.store') }}" method="POST" class="bg-white p-6 rounded-2xl shadow-md w-full">
+<form action="{{ route('ingresos.store') }}" method="POST"
+    class="bg-white p-6 rounded-2xl shadow-md w-full  min-h-[400px]">
     @csrf
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
