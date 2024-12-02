@@ -95,20 +95,45 @@ class IngresoController extends Controller
     }
 
     // Calcular ingresos por mes y categoría agrupados
+    // private function ingresosPorMesYCategoriaAgrupados($anio)
+    // {
+    //     $ingresos = Ingreso::where('user_id', Auth::id())
+    //         ->whereYear('fecha', $anio)
+    //         ->whereIn('categoria', ['Ingresos Fijos', 'Ingresos Variables']) // Filtra solo estas categorías
+    //         ->selectRaw('MONTH(fecha) as mes, categoria, SUM(monto) as total_monto')
+    //         ->groupBy('mes', 'categoria')
+    //         ->orderBy('mes')
+    //         ->orderBy('categoria')
+    //         ->get();
+
+    //     $datosAgrupados = $ingresos->groupBy('categoria')->map(function ($grupo) {
+    //         return $grupo->keyBy('mes')->pluck('total_monto');
+    //     });
+
+    //     $totalesPorCategoria = $ingresos->groupBy('categoria')->map(function ($grupo) {
+    //         return $grupo->sum('total_monto');
+    //     });
+
+    //     return ['datosAgrupados' => $datosAgrupados, 'totalesPorCategoria' => $totalesPorCategoria];
+    // }
+
     private function ingresosPorMesYCategoriaAgrupados($anio)
     {
         $ingresos = Ingreso::where('user_id', Auth::id())
             ->whereYear('fecha', $anio)
+            ->whereIn('categoria', ['Ingresos Fijos', 'Ingresos Variables']) // Filtra solo estas categorías
             ->selectRaw('MONTH(fecha) as mes, categoria, SUM(monto) as total_monto')
             ->groupBy('mes', 'categoria')
             ->orderBy('mes')
             ->orderBy('categoria')
             ->get();
 
+        // Agrupar por categoría y organizar los meses
         $datosAgrupados = $ingresos->groupBy('categoria')->map(function ($grupo) {
-            return $grupo->keyBy('mes')->pluck('total_monto');
+            return $grupo->pluck('total_monto', 'mes'); // Optimizado para solo obtener 'total_monto' y 'mes'
         });
 
+        // Calcular los totales por categoría
         $totalesPorCategoria = $ingresos->groupBy('categoria')->map(function ($grupo) {
             return $grupo->sum('total_monto');
         });
@@ -179,27 +204,52 @@ class IngresoController extends Controller
     }
 
     // Mostrar formulario de creación
-    public function create()
+    public function create(Request $request)
     {
-        return view('ingresos.create');
+
+        // Retornar la vista con las categorías
+        return view('ingresos.create', compact('tipos'));
     }
 
     // Guardar un nuevo ingreso
+    // public function store(Request $request)
+    // {
+    //     $validated = $request->validate([
+    //         'categoria' => 'required|string|max:255',
+    //         'nombre' => 'required|string|max:255',
+    //         'nombre' => 'required|string|max:255', // o 'exists:categorias,nombre' si es una relación
+    //         'monto' => 'required|numeric|min:0',
+    //         'fecha' => 'required|date',
+    //     ]);
+
+    //     $validated['user_id'] = Auth::id();
+    //     Ingreso::create($validated);
+
+    //     return redirect()->route('ingresos.index')->with('success', 'Ingreso agregado correctamente.');
+    // }
+
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'categoria' => 'required|string|max:255',
-            'nombre' => 'required|string|max:255',
-            'monto' => 'required|numeric|min:0',
+        // Validación de los datos recibidos
+        $data = $request->validate([
+            'tipo' => 'required|string|max:255',
+            'nombre' => 'required|string|max:255', // o 'exists:categorias,nombre' si es una relación
+            'monto' => 'required|numeric',
             'fecha' => 'required|date',
         ]);
 
-        $validated['user_id'] = Auth::id();
-        Ingreso::create($validated);
+        // Crear el nuevo ingreso en la base de datos
+        Ingreso::create([
+            'categoria' => $data['tipo'], // Asignamos la categoría como tipo (si es necesario)
+            'nombre' => $data['nombre'], // Asegúrate de que este campo es correcto
+            'monto' => $data['monto'],
+            'fecha' => $data['fecha'],
+            'user_id' => Auth::id(), // Asumiendo que el usuario está autenticado
+        ]);
 
-        return redirect()->route('ingresos.index')->with('success', 'Ingreso agregado correctamente.');
+        // Redirigir o devolver una respuesta
+        return redirect()->route('ingresos.index')->with('success', 'Ingreso registrado exitosamente');
     }
-
     // Mostrar ingreso
     public function show(Ingreso $ingreso)
     {
@@ -258,4 +308,5 @@ class IngresoController extends Controller
 
         return redirect()->route('ingresos.index')->with('success', 'Ingreso duplicado correctamente.');
     }
+
 }

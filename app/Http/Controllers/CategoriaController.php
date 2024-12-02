@@ -152,4 +152,65 @@ class CategoriaController extends Controller
 
         return response()->json($categorias);
     }
+    // En el modelo Categoria
+    public function scopeByTipo($query, $tipo, $userId)
+    {
+        return $query->where('tipo', $tipo)
+            ->where(function ($query) use ($userId) {
+                $query->where('user_id', $userId)
+                    ->orWhereNull('user_id');
+            });
+    }
+    // En el controlador CategoriaController
+    public function getNombresPorCategoria($categoriaId)
+    {
+        // Obtener los nombres relacionados con la categoría seleccionada
+        $nombres = Categoria::where('id', $categoriaId)->get(['id', 'nombre']);
+        return response()->json($nombres);
+    }
+
+    // Mostrar tipos de categorías y nombres relacionados con un tipo
+    public function getCategoriasPorTipo(Request $request)
+    {
+        // Validar si el tipo fue enviado
+        $tipo = $request->input('tipo');
+        if (!$tipo) {
+            return response()->json(['error' => 'El tipo es requerido'], 400);
+        }
+
+        // Obtener categorías de acuerdo al tipo (puedes ajustar esto según tus necesidades)
+        $categorias = Categoria::where('tipo', $tipo)->get(['id', 'nombre']);
+
+        return response()->json($categorias);
+    }
+
+    // Función para obtener los tipos únicos
+    public function getTipos()
+    {
+        // Obtener los tipos únicos
+        $tipos = Categoria::select('tipo')->distinct()->pluck('tipo');
+
+        return response()->json($tipos);
+    }
+
+    //  Funcion para disponibilizar API de tipos de Ingreso y nombres para usar en componentes
+    public function getTiposIngreso()
+    {
+        // Obtener los tipos que contienen la palabra 'Ingreso' y son únicos
+        $tipos = Categoria::select('tipo')
+            ->distinct()
+            ->where('tipo', 'like', '%Ingreso%') // Filtramos solo los tipos que contienen 'Ingreso'
+            ->pluck('tipo');
+
+        return response()->json($tipos);
+    }
+    public function getNombresPorTipo($tipo)
+    {
+        // Obtener los nombres de las categorías según el tipo
+        $nombres = Categoria::where('tipo', $tipo)
+            ->get(['id', 'nombre']); // Obtén los ID y los nombres de las categorías
+
+        return response()->json($nombres);
+    }
+
 }

@@ -32,6 +32,7 @@
                         <td colspan="{{ count($meses) + 2 }}" class="text-center py-4">No hay datos disponibles.</td>
                     </tr>
                 @endforelse
+
             </tbody>
         </table>
     </div>
