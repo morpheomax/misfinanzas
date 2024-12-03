@@ -211,23 +211,6 @@ class IngresoController extends Controller
         return view('ingresos.create', compact('tipos'));
     }
 
-    // Guardar un nuevo ingreso
-    // public function store(Request $request)
-    // {
-    //     $validated = $request->validate([
-    //         'categoria' => 'required|string|max:255',
-    //         'nombre' => 'required|string|max:255',
-    //         'nombre' => 'required|string|max:255', // o 'exists:categorias,nombre' si es una relación
-    //         'monto' => 'required|numeric|min:0',
-    //         'fecha' => 'required|date',
-    //     ]);
-
-    //     $validated['user_id'] = Auth::id();
-    //     Ingreso::create($validated);
-
-    //     return redirect()->route('ingresos.index')->with('success', 'Ingreso agregado correctamente.');
-    // }
-
     public function store(Request $request)
     {
         // Validación de los datos recibidos
@@ -248,7 +231,13 @@ class IngresoController extends Controller
         ]);
 
         // Redirigir o devolver una respuesta
-        return redirect()->route('ingresos.index')->with('success', 'Ingreso registrado exitosamente');
+        //return redirect()->route('ingresos.index')->with('success', 'Ingreso registrado exitosamente');
+        return redirect()->route('ingresos.index')->with('swal', [
+            'title' => '¡Éxito!',
+            'text' => 'Ingreso registrado exitosamente',
+            'icon' => 'success',
+        ]);
+
     }
     // Mostrar ingreso
     public function show(Ingreso $ingreso)
@@ -286,7 +275,12 @@ class IngresoController extends Controller
         $ingreso->update($validatedData);
 
         // Redirigir a la lista de ingresos con un mensaje de éxito
-        return redirect()->route('ingresos.index')->with('success', 'Ingreso actualizado correctamente');
+        //return redirect()->route('ingresos.index')->with('success', 'Ingreso actualizado correctamente');
+        return redirect()->route('ingresos.index')->with('swal', [
+            'title' => '¡Éxito!',
+            'text' => 'Ingreso actualizado correctamente',
+            'icon' => 'info',
+        ]);
     }
 
     // Eliminar ingreso
@@ -294,7 +288,12 @@ class IngresoController extends Controller
     {
         $this->authorize('delete', $ingreso);
         $ingreso->delete();
-        return redirect()->route('ingresos.index')->with('success', 'Ingreso eliminado correctamente.');
+        //return redirect()->route('ingresos.index')->with('success', 'Ingreso eliminado correctamente.');
+        return redirect()->route('ingresos.index')->with('swal', [
+            'title' => 'Atención!',
+            'text' => 'Ingreso eliminado correctamente.',
+            'icon' => 'warning',
+        ]);
     }
 
     // Duplicar ingreso
@@ -306,7 +305,12 @@ class IngresoController extends Controller
         $newIngreso->fecha = now(); // Actualizar la fecha si es necesario
         $newIngreso->save();
 
-        return redirect()->route('ingresos.index')->with('success', 'Ingreso duplicado correctamente.');
+        //return redirect()->route('ingresos.index')->with('success', 'Ingreso duplicado correctamente.');
+        return redirect()->route('ingresos.index')->with('swal', [
+            'title' => 'Atención!',
+            'text' => 'Ingreso duplicado correctamente.',
+            'icon' => 'success',
+        ]);
     }
 
 }

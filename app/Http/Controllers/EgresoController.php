@@ -3,16 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Models\Egreso;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 
 class EgresoController extends Controller
 {
+    use AuthorizesRequests;
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         //
+        $egresos = Egreso::all();
+        return view('egresos.index', compact('egresos'));
     }
 
     /**
@@ -37,6 +41,7 @@ class EgresoController extends Controller
     public function show(Egreso $egreso)
     {
         //
+        return view('egresos.show', compact('egreso'));
     }
 
     /**

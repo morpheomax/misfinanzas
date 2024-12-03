@@ -17,6 +17,9 @@
 
     <!-- Scripts -->
     @vite(['resources/sass/app.scss', 'resources/css/app.css', 'resources/js/app.js'])
+    @vite(['resources/js/app.js'])
+
+    {{--  --}}
 
 </head>
 
@@ -27,12 +30,25 @@
 
     <!-- Contenido Principal -->
     <main class="flex-1">
-        @if (session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
+        {{-- Alertas de SweetAlert --}}
+        @if (session('swal'))
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    Swal.fire({
+                        title: "{{ session('swal')['title'] }}",
+                        text: "{{ session('swal')['text'] }}",
+                        icon: "{{ session('swal')['icon'] }}",
+                        timer: 3000,
+                        timerProgressBar: true, // Muestra barra de progreso
+                        toast: true, // Aparece como un toast en lugar de una ventana modal
+                        position: 'top-center', // Posición en la esquina superior derecha
+                        showConfirmButton: false
+                    });
+
+                });
+            </script>
         @endif
-        @if (session('error'))
-            <div class="alert alert-danger">{{ session('error') }}</div>
-        @endif
+        {{-- Fin de alertas --}}
 
         @yield('content')
     </main>
