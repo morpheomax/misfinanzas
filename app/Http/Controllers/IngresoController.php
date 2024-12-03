@@ -94,29 +94,6 @@ class IngresoController extends Controller
             ->pluck('year');
     }
 
-    // Calcular ingresos por mes y categoría agrupados
-    // private function ingresosPorMesYCategoriaAgrupados($anio)
-    // {
-    //     $ingresos = Ingreso::where('user_id', Auth::id())
-    //         ->whereYear('fecha', $anio)
-    //         ->whereIn('categoria', ['Ingresos Fijos', 'Ingresos Variables']) // Filtra solo estas categorías
-    //         ->selectRaw('MONTH(fecha) as mes, categoria, SUM(monto) as total_monto')
-    //         ->groupBy('mes', 'categoria')
-    //         ->orderBy('mes')
-    //         ->orderBy('categoria')
-    //         ->get();
-
-    //     $datosAgrupados = $ingresos->groupBy('categoria')->map(function ($grupo) {
-    //         return $grupo->keyBy('mes')->pluck('total_monto');
-    //     });
-
-    //     $totalesPorCategoria = $ingresos->groupBy('categoria')->map(function ($grupo) {
-    //         return $grupo->sum('total_monto');
-    //     });
-
-    //     return ['datosAgrupados' => $datosAgrupados, 'totalesPorCategoria' => $totalesPorCategoria];
-    // }
-
     private function ingresosPorMesYCategoriaAgrupados($anio)
     {
         $ingresos = Ingreso::where('user_id', Auth::id())

@@ -204,6 +204,17 @@ class CategoriaController extends Controller
 
         return response()->json($tipos);
     }
+    //  Funcion para disponibilizar API de tipos de Ingreso y nombres para usar en componentes
+    public function getTiposEgreso()
+    {
+        // Obtener los tipos que contienen la palabra 'Ingreso' y son únicos
+        $tipos = Categoria::select('tipo')
+            ->distinct()
+            ->where('tipo', 'like', '%Egreso%') // Filtramos solo los tipos que contienen 'Ingreso'
+            ->pluck('tipo');
+
+        return response()->json($tipos);
+    }
     public function getNombresPorTipo($tipo)
     {
         // Obtener los nombres de las categorías según el tipo
