@@ -36,8 +36,8 @@
             <!-- Filtrado de información -->
             {{-- @include('components.ingresos.create-income-form') --}}
 
-            <!-- Tabla de ingresos -->
-            {{-- @include('components.ingresos.income-table', ['ingresos' => $ingresos]) --}}
+            <!-- Tabla de metas -->
+            @include('components.metas.income-table', ['metas' => $metas])
         </section>
 
         {{-- Sección: Resumen de Ingresos --}}
@@ -45,16 +45,19 @@
             <h2 class="text-2xl font-semibold mb-6 text-gray-800 text-center">Resumen de Metas</h2>
 
             <!-- Selector de Año -->
+
             <div class="text-center mb-4">
-                {{-- @include('components.ingresos.select-year', [
+                @include('components.metas.select-year', [
                     'aniosDisponibles' => $aniosDisponibles,
                     'anioSeleccionado' => $anio,
-                ]) --}}
+                ])
             </div>
             <div class="flex flex-col md:flex-row gap-4">
                 <!-- Resumen de Ingresos por Categoría y Acumulado Anual -->
                 <div class="w-full md:1/2 flex-grow">
 
+                    {{-- Importar summary-monthly.blade.php --}}
+                    @include('components.metas.summary-monthly')
                     <!-- Acumulado Anual -->
                     {{-- @include('components.ingresos.acumulado_anual', [
                         'acumuladoAnual' => $acumuladoAnual,

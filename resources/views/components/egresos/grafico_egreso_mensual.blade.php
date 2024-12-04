@@ -17,8 +17,8 @@
 
                     label: 'Egresos Mensuales',
                     data: {!! json_encode($totalesMensuales->values()) !!},
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(245, 25, 73, 0.2)',
+                    borderColor: 'rgba(255, 192, 192, 1)',
                     borderWidth: 1
                 }]
             },

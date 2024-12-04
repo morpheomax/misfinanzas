@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('metas', function (Blueprint $table) {
             $table->id();
             $table->string('nombre');
-            $table->decimal('monto', 10, 2);
-            $table->decimal('monto_ahorrado', 10, 2)->default(0);
+            $table->integer('monto');
+            $table->integer('monto_ahorrado')->default(0);
             $table->date('fecha');
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->timestamps();
