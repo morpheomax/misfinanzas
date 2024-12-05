@@ -8,7 +8,8 @@
                     <th class="px-6 py-3 text-left text-sm font-medium">Nombre</th>
                     <th class="px-6 py-3 text-left text-sm font-medium">Monto</th>
                     <th class="px-6 py-3 text-left text-sm font-medium">Monto Ahorrado</th>
-                    <th class="px-6 py-3 text-left text-sm font-medium">Fecha Cumplimiento</th>
+                    <th class="px-6 py-3 text-left text-sm font-medium">Fecha Limite</th>
+                    <th class="px-6 py-3 text-left text-sm font-medium">Estado</th>
                     <th class="px-6 py-3 text-left text-sm font-medium">Acciones</th>
                 </tr>
             </thead>
@@ -20,6 +21,7 @@
                         <td class="px-6 py-4">{{ '$' . number_format($meta->monto, 0, '', '.') }}</td>
                         <td class="px-6 py-4">{{ '$' . number_format($meta->monto_ahorrado, 0, '', '.') }}</td>
                         <td class="px-6 py-4">{{ \Carbon\Carbon::parse($meta->fecha)->format('d/m/Y') }}</td>
+                        <td class="px-6 py-4">{{ $meta->estado }}</td>
                         <td class="px-6 py-4">
                             <div class="flex space-x-4">
                                 <a href="{{ route('metas.edit', $meta->id) }}"

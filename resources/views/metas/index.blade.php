@@ -22,10 +22,9 @@
 
             <!-- Gráfico -->
             <div class="w-full">
-                {{-- <h2 class="text-xl font-semibold mb-4 text-gray-800">Gráfico de Ingresos Mensual</h2> --}}
-                {{-- @include('components.ingresos.grafico_ingreso_mensual', [
-                    'totalesMensuales' => $totalesMensuales,
-                ]) --}}
+
+                {{-- @include('components.metas.grafico-metas-mes', ['metasPorMes' => '$metasPorMes']) --}}
+
             </div>
 
         </section>
@@ -34,7 +33,7 @@
         {{-- Sección: Filtro y Tabla --}}
         <section class="w-full mx-auto mb-6">
             <!-- Filtrado de información -->
-            {{-- @include('components.ingresos.create-income-form') --}}
+            @include('components.metas.create-income-form')
 
             <!-- Tabla de metas -->
             @include('components.metas.income-table', ['metas' => $metas])
@@ -56,35 +55,20 @@
                 <!-- Resumen de Ingresos por Categoría y Acumulado Anual -->
                 <div class="w-full md:1/2 flex-grow">
 
-                    {{-- Importar summary-monthly.blade.php --}}
-                    @include('components.metas.summary-monthly')
-                    <!-- Acumulado Anual -->
-                    {{-- @include('components.ingresos.acumulado_anual', [
-                        'acumuladoAnual' => $acumuladoAnual,
-                        'anio' => $anio,
-                        'aniosDisponibles' => $aniosDisponibles,
-                    ]) --}}
+                    @include('components.metas.MetasCumplidas', ['metasCumplidas' => $metasCumplidas])
+
                 </div>
 
 
                 <div class="w-full md:1/2 flex-grow">
-                    <!-- Mostrar acumulado anual por categoría -->
-                    {{-- @include('components.ingresos.acumulado_anual_categoria', [
-                        'acumuladoAnualCategoria' => $acumuladoAnualCategoria,
-                        'anio' => $anio,
-                        'aniosDisponibles' => $aniosDisponibles,
-                    ]) --}}
+
+                    @include('components.metas.MetasPorMes', ['metasPorMes' => $metasPorMes])
+
+
                 </div>
             </div>
             <div class="w-full mt-6 ">
-                <!-- Ingresos por Categoría y Mes -->
-                {{-- @include('components.ingresos.ingresos_por_categoria_mes', [
-                    'datosAgrupados' => $ingresosPorMesYCategoria,
-                    'totalesPorCategoria' => $totalesPorCategoria,
-                    'meses' => $meses,
-                    'anio' => $anio,
-                    'aniosDisponibles' => $aniosDisponibles,
-                ]) --}}
+
             </div>
 
 
@@ -98,7 +82,7 @@
             document.getElementById('anio').addEventListener('change', function() {
                 const anioSeleccionado = this.value;
 
-                fetch("{{ route('ingresos.index') }}?anio=" + anioSeleccionado, {
+                fetch("{{ route('metas.index') }}?anio=" + anioSeleccionado, {
                         method: 'GET',
                         headers: {
                             'Accept': 'application/json'

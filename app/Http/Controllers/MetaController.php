@@ -6,172 +6,95 @@ use App\Models\Meta;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 
 class MetaController extends Controller
 {
     use AuthorizesRequests;
 
-    // Display a listing of the resource.
+    /**
+     * Display a listing of the resource.
+     */
     public function index(Request $request)
     {
-        $userId = Auth::id();
-        $filtroAnio = $request->input('anio', now()->year);
+        // Obtener el año seleccionado, si no se pasa, usar el año actual
+        $anio = $request->input('anio', date('Y'));
+
         // Obtener los años disponibles
-        $aniosDisponibles = $this->aniosDisponibles($userId);
-        // Si no hay un año seleccionado, establecer el año actual como predeterminado
-        $anioSeleccionado = $request->get('anio', date('Y')); // Usa el año actual si no hay selección
+        $aniosDisponibles = $this->aniosDisponibles();
 
-        // Datos principales
-        $metas = Meta::where('user_id', $userId)->paginate(10);
-        $metasPorMes = $this->metasAgrupadasPorMes($filtroAnio);
-        $totalesPorAnio = $this->contarMetas($filtroAnio);
-        $totalesMensuales = $this->calcularAhorroMensual($filtroAnio);
+        // Obtener metas filtradas por el usuario
+        $query = $this->filtrosMeta($request);
 
-        // Obtener el año seleccionado desde el formulario
-        $anioSeleccionado = $request->get('anio', $aniosDisponibles->first());
+        $metas = $query->paginate(10);
+
+        // Datos para las estadísticas
+        $metasCumplidas = $this->metasCumplidas($anio);
+        $metasPorMes = $this->metasPorMes($anio);
+        $metasPorAnio = $this->metasPorAnio();
+        $metasProgreso = $this->metasProgreso();
+
+        // Convertir los números de los meses a nombres
+        $meses = $this->meses();
+        $metasPorMes = $metasPorMes->mapWithKeys(function ($total, $mes) use ($meses) {
+            return [$meses[$mes] => $total]; // Mapear el mes numérico a su nombre
+        });
+
+        // Extraes las claves (meses) y los valores (totales)
+        $meses = $metasPorMes->keys(); // Meses (las claves)
+        $totales = $metasPorMes->values(); // Totales (los valores)
+
+        // Si la solicitud es AJAX, devolver solo los componentes necesarios
+        if ($request->ajax()) {
+            $metasCumplidasView = view('metas.cumplidas', ['metasCumplidas' => $metasCumplidas])->render();
+            $metasPorMesView = view('metas.por-mes', ['metasPorMes' => $metasPorMes])->render();
+
+            return response()->json([
+                'metasCumplidas' => $metasCumplidasView,
+                'metasPorMes' => $metasPorMesView,
+            ]);
+        }
 
         return view('metas.index', [
             'metas' => $metas,
-            'metasPorMes' => $metasPorMes,
+            'anio' => $anio,
             'aniosDisponibles' => $aniosDisponibles,
-            'anioSeleccionado' => $anioSeleccionado,
-            'aniosDisponibles' => $this->aniosDisponibles($userId),
+            'metasCumplidas' => $metasCumplidas,
+            'metasPorMes' => $metasPorMes,
+            'metasPorAnio' => $metasPorAnio,
+            'metasProgreso' => $metasProgreso,
 
-            'totalesPorAnio' => $totalesPorAnio,
-            'totalesMensuales' => $totalesMensuales,
-
-            'anio' => $anioSeleccionado,
-            'filtroAnio' => $filtroAnio,
         ]);
     }
 
-    // Show the form for creating a new resource.
-    public function create()
+    /**
+     * Filtros para la consulta de metas.
+     */
+    private function filtrosMeta(Request $request)
     {
-        return view('metas.create');
+        $query = Meta::where('user_id', Auth::id());
+
+        // Filtro por estado de la meta
+        if ($request->filled('estado')) {
+            $query->where('estado', $request->estado);
+        }
+
+        // Filtros por fechas
+        if ($request->filled('desde') && $request->filled('hasta')) {
+            $query->whereBetween('fecha', [$request->desde, $request->hasta]);
+        }
+
+        // Filtro por palabra clave
+        if ($request->filled('buscar')) {
+            $query->where('nombre', 'like', '%' . $request->buscar . '%');
+        }
+
+        return $query;
     }
 
-    // Store a newly created resource in storage.
-    public function store(Request $request)
-    {
-        // Validación de los datos recibidos
-        $data = $request->validate([
-            'nombre' => 'required|string|max:255',
-            'monto' => 'required|numeric',
-            'monto_ahorrado' => 'required|numeric',
-            'fecha' => 'required|date',
-        ]);
-
-        // Crear el nuevo egreso en la base de datos
-        Meta::create([
-            'nombre' => $data['nombre'],
-            'monto' => $data['monto'],
-            'monto_ahorrado' => $data['monto_ahorrado'],
-            'fecha' => $data['fecha'],
-            'user_id' => Auth::id(),
-        ]);
-
-        // Redirigir o devolver una respuesta
-        return redirect()->route('metas.index')->with('swal', [
-            'title' => '¡Éxito!',
-            'text' => 'Meta registrada exitosamente',
-            'icon' => 'success',
-        ]);
-    }
-
-    // Show the specified resource.
-    public function show(Meta $meta)
-    {
-        $validated['user_id'] = Auth::id();
-        $this->authorize('view', $meta);
-        return view('metas.show', compact('meta'));
-    }
-
-    // Show the form for editing the specified resource.
-    public function edit(Meta $meta)
-    {
-        $this->authorize('update', $meta);
-        return view('metas.edit', compact('meta'));
-    }
-
-    // Update the specified resource in storage.
-    public function update(Request $request, Meta $meta)
-    {
-        $validateData = $request->validate([
-            'nombre' => 'required|string|max:255',
-            'monto' => 'required|numeric',
-            'monto_ahorrado' => 'required|numeric',
-            'fecha' => 'required|date',
-        ]);
-        // Autorización para actualizar el egreso
-        $this->authorize('update', $meta);
-        // Actualizar el egreso con los datos validados
-        $meta->update($validateData);
-
-// Redirigir a la lista de egresos con un mensaje de éxito
-        return redirect()->route('metas.index')->with('swal', [
-            'title' => '¡Éxito!',
-            'text' => 'Egreso actualizado correctamente',
-            'icon' => 'info',
-        ]);
-    }
-
-    // Remove the specified resource from storage.
-    public function destroy(Meta $meta)
-    {
-        $this->authorize('delete', $meta);
-        $meta->delete();
-
-        return redirect()->route('metas.index')->with('swal', [
-            'title' => 'Atención!',
-            'text' => 'Egreso eliminado correctamente.',
-            'icon' => 'warning',
-        ]);
-    }
-
-    // Validar los datos de una meta.
-    private function validateMeta(Request $request)
-    {
-        return $request->validate([
-            'nombre' => 'required|string|max:255',
-            'monto' => 'required|numeric',
-            'monto_ahorrado' => 'required|numeric',
-            'fecha' => 'required|date',
-        ]);
-    }
-
-    // Agrupar metas por mes para un año específico.
-    // private function metasAgrupadasPorMes($anio)
-    // {
-    //     $meses = $this->meses();
-    //     $metas = Meta::where('user_id', Auth::id())
-    //         ->whereYear('fecha', $anio)
-    //         ->get()
-    //         ->groupBy('mes');
-
-    //     return collect($meses)->mapWithKeys(fn($nombreMes, $numMes) => [
-    //         $nombreMes => $metas->get($numMes, collect([]))
-    //     ]);
-    // }
-    // Agrupar metas por mes para un año específico.
-    private function metasAgrupadasPorMes($anio)
-    {
-        $meses = $this->meses();
-
-        $metas = Meta::where('user_id', Auth::id())
-            ->whereYear('fecha', $anio)
-            ->selectRaw('MONTH(fecha) as mes, user_id, id') // Selecciona el mes usando MONTH(fecha)
-            ->get()
-            ->groupBy('mes'); // Agrupa por el mes calculado en la consulta
-
-        return collect($meses)->mapWithKeys(fn($nombreMes, $numMes) => [
-            $nombreMes => $metas->get($numMes, collect([]))
-        ]);
-    }
-
-    // Obtener los años disponibles para el filtro.
-    private function AniosDisponibles($userId)
+    /**
+     * Obtener los años disponibles para el filtro.
+     */
+    private function aniosDisponibles()
     {
         return Meta::where('user_id', Auth::id())
             ->distinct()
@@ -180,44 +103,51 @@ class MetaController extends Controller
             ->pluck('year');
     }
 
-    //Contar metas por año.
-    private function contarMetas($anio)
+    /**
+     * Obtener las metas cumplidas en un año.
+     */
+    private function metasCumplidas($anio)
     {
         return Meta::where('user_id', Auth::id())
             ->whereYear('fecha', $anio)
+            ->where('estado', 'cumplida')
             ->count();
     }
-    public function calcularAhorroMensual($anio)
+
+    /**
+     * Obtener metas por mes.
+     */
+    private function metasPorMes($anio)
     {
-        // Obtenemos el nombre de los meses en español
-        $meses = $this->meses();
-
-        try {
-            // Recuperamos las metas por mes
-            $metas = Meta::where('user_id', Auth::id())
-                ->whereYear('fecha', $anio)
-                ->selectRaw('MONTH(fecha) as mes, SUM(monto_ahorrado) as total_ahorrado')
-                ->groupBy('mes')
-                ->pluck('total_ahorrado', 'mes'); // Esto nos devuelve un array con mes => total_ahorrado
-
-            // Ahora mapeamos el resultado para asegurar que tenga el nombre del mes
-            return collect($meses)->mapWithKeys(function ($nombreMes, $mes) use ($metas) {
-                return [
-                    $nombreMes => [
-                        'total' => $metas->get($mes, 0), // Monto ahorrado para ese mes (o 0 si no hay metas)
-                        'ahorrado' => $metas->get($mes, 0), // Asumiendo que quieres mostrar el mismo monto ahorrado
-                    ],
-                ];
-            });
-
-        } catch (\Exception $e) {
-            // En caso de error, registramos el error en los logs
-            Log::error('Error al calcular el ahorro mensual: ' . $e->getMessage());
-            return []; // Devolvemos un array vacío en caso de error
-        }
+        return Meta::where('user_id', Auth::id())
+            ->whereYear('fecha', $anio)
+            ->selectRaw('MONTH(fecha) as mes, COUNT(*) as total')
+            ->groupBy('mes')
+            ->orderBy('mes')
+            ->pluck('total', 'mes');
     }
 
-    // Meses del año.
+    private function metasPorAnio()
+    {
+        // Suponiendo que tienes un modelo 'Meta' con campos 'anio' y 'cumplida'
+        $metasPorAnio = Meta::selectRaw('YEAR(created_at) as anio, COUNT(*) as total')
+            ->groupBy('anio')
+            ->get();
+
+    }
+
+    private function metasProgreso()
+    {
+        // Obtener las metas cumplidas por mes
+        return Meta::selectRaw('MONTH(created_at) as mes, COUNT(*) as total')
+            ->where('estado', 'cumplida') // o 'cumplida' dependiendo de tu base de datos
+            ->groupBy('mes')
+            ->get(); // Esto devuelve una colección
+    }
+
+    /**
+     * Obtener nombres de los meses.
+     */
     private function meses()
     {
         return [
@@ -225,5 +155,94 @@ class MetaController extends Controller
             5 => 'Mayo', 6 => 'Junio', 7 => 'Julio', 8 => 'Agosto',
             9 => 'Septiembre', 10 => 'Octubre', 11 => 'Noviembre', 12 => 'Diciembre',
         ];
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        return view('metas.create');
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        // Validar los datos
+        $data = $request->validate([
+            'estado' => 'required|in:pendiente,cumplida',
+            'nombre' => 'required|string|max:255',
+            'monto' => 'required|numeric',
+            'monto_ahorrado' => 'required|numeric',
+            'fecha' => 'required|date',
+        ]);
+
+        // Crear la meta
+        Meta::create([
+            'nombre' => $data['nombre'],
+            'monto' => $data['monto'],
+            'monto_ahorrado' => $data['monto_ahorrado'],
+            'fecha' => $data['fecha'],
+            'user_id' => Auth::id(),
+            'estado' => 'pendiente', // Estado inicial
+        ]);
+
+        return redirect()->route('metas.index')->with('swal', [
+            'title' => '¡Meta creada!',
+            'text' => 'Tu meta ha sido registrada exitosamente.',
+            'icon' => 'success',
+        ]);
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(Meta $meta)
+    {
+        $this->authorize('update', $meta);
+
+        return view('metas.edit', compact('meta'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, Meta $meta)
+    {
+        $this->authorize('update', $meta);
+
+        $data = $request->validate([
+            'estado' => 'required|in:pendiente,cumplida',
+            'nombre' => 'required|string|max:255',
+            'monto' => 'required|numeric',
+            'monto_ahorrado' => 'required|numeric',
+            'fecha' => 'required|date',
+        ]);
+
+        $meta->update($data);
+
+        return redirect()->route('metas.index')->with('swal', [
+            'title' => '¡Meta actualizada!',
+            'text' => 'La meta ha sido actualizada exitosamente.',
+            'icon' => 'success',
+        ]);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Meta $meta)
+    {
+        $this->authorize('delete', $meta);
+
+        $meta->delete();
+
+        return redirect()->route('metas.index')->with('swal', [
+            'title' => '¡Meta eliminada!',
+            'text' => 'La meta fue eliminada correctamente.',
+            'icon' => 'success',
+        ]);
     }
 }

@@ -11,7 +11,7 @@ class Meta extends Model
     use HasFactory;
 
     // Definir los campos que se pueden asignar masivamente
-    protected $fillable = ['nombre', 'monto', 'monto_ahorrado', 'fecha', 'user_id'];
+    protected $fillable = ['nombre', 'monto', 'monto_ahorrado', 'fecha', 'estado', 'user_id'];
     //
     public function user()
     {
@@ -30,6 +30,7 @@ class Meta extends Model
             'monto' => 'required|numeric',
             'monto_ahorrado' => 'required|numeric',
             'fecha' => 'required|date',
+            'estado' => 'required|in:pendiente,cumplida',
             'user_id' => 'required|exists:users,id', // Asegura que el 'user_id' exista en la tabla 'users'
         ]);
     }

@@ -13,6 +13,23 @@
             <!-- Contenedor de campos organizados en columna para pantallas pequeñas, en fila para pantallas medianas y grandes -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
 
+
+                <!-- Estado -->
+                <div class="mb-4">
+                    <label for="estado" class="block text-sm font-medium text-gray-700">Estado</label>
+                    <select name="estado" id="estado"
+                        class="mt-2 block w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                        <option value="pendiente" {{ old('estado', $meta->estado) === 'pendiente' ? 'selected' : '' }}>
+                            Pendiente</option>
+                        <option value="cumplida" {{ old('estado', $meta->estado) === 'cumplida' ? 'selected' : '' }}>
+                            Cumplida</option>
+                    </select>
+                    @error('estado')
+                        <div class="text-red-500 text-xs mt-2">{{ $message }}</div>
+                    @enderror
+                </div>
+
+
                 <!-- Nombre -->
                 <div class="mb-4">
                     <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre</label>
@@ -42,7 +59,7 @@
                     <input type="number" name="monto_ahorrado" id="monto_ahorrado"
                         class="mt-2 block w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                         value="{{ old('monto', $meta->monto_ahorrado) }}" required>
-                    required>
+
                     @error('monto_ahorrado')
                         <div class="text-red-500 text-xs mt-2">{{ $message }}</div>
                     @enderror

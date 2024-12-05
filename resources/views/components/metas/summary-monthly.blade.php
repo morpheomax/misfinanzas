@@ -1,7 +1,4 @@
-@php
-    // Si no se ha pasado $totalesMensuales, inicializa un array vacío.
-    $totalesMensuales = $totalesMensuales ?? [];
-@endphp
+@props(['totalesMensuales' => []])
 
 @if (empty($totalesMensuales))
     <p class="text-gray-700">No hay datos disponibles para este mes.</p>
@@ -20,11 +17,9 @@
                     <td class="border border-gray-300 px-4 py-2">{{ $mes }}</td>
                     <td class="border border-gray-300 px-4 py-2">
                         {{ number_format($data['total'] ?? 0, 0, ',', '.') }}
-                        <!-- Verifica si existe 'total', si no es 0 -->
                     </td>
                     <td class="border border-gray-300 px-4 py-2">
                         {{ number_format($data['ahorrado'] ?? 0, 0, ',', '.') }}
-                        <!-- Verifica si existe 'ahorrado', si no es 0 -->
                     </td>
                 </tr>
             @endforeach
