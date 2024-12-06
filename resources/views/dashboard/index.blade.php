@@ -19,5 +19,30 @@
                 Metas
             </a>
         </div>
+
+        {{-- Componentes --}}
+        <div class="container mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 py-6">
+
+
+
+            @include('components.dashboard.filtro', [
+                'años' => $años,
+            ])
+            @include('components.dashboard.ingresosTotales', [
+                'ingresosTotales' => $ingresosTotales,
+            ])
+            @include('components.dashboard.egresosTotales')
+            @include('components.dashboard.saldoGeneral')
+        </div>
+        <div class="container mx-auto grid grid-cols-1 md:grid-cols-2  gap-6 py-6">
+            @include('components.dashboard.resumenMensual', ['años' => $años])
+            @include('components.dashboard.progresoMetas')
+        </div>
+        <div class="container mx-auto grid grid-cols-1 gap-6 py-6">
+            @include('components.dashboard.categorias')
+        </div>
+        <div class="container mx-auto grid grid-cols-1 gap-6 py-6">
+            @include('components.dashboard.ultimosMovimientos')
+        </div>
     </div>
 @endsection
