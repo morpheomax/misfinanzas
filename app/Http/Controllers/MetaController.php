@@ -29,6 +29,8 @@ class MetaController extends Controller
 
         // Datos para las estadísticas
         $metasCumplidas = $this->metasCumplidas($anio);
+        $metasPendientes = $this->metasPendientes($anio);
+        $metasPorEstado = $this->metasPorEstado($anio);
         $metasPorMes = $this->metasPorMes($anio);
         $metasPorAnio = $this->metasPorAnio();
         $metasProgreso = $this->metasProgreso();
@@ -46,10 +48,14 @@ class MetaController extends Controller
         // Si la solicitud es AJAX, devolver solo los componentes necesarios
         if ($request->ajax()) {
             $metasCumplidasView = view('metas.cumplidas', ['metasCumplidas' => $metasCumplidas])->render();
+            $metasPendientes = view('metas.pendientes', ['metasPendientes' => $metasPendientes])->render();
+            $metasPorEstado = view('metas.estado', ['metasPorEstado' => $metasPorEstado])->render();
             $metasPorMesView = view('metas.por-mes', ['metasPorMes' => $metasPorMes])->render();
 
             return response()->json([
                 'metasCumplidas' => $metasCumplidasView,
+                'metasPendientes' => $metasPendientes,
+                'metasPorEstado' => $metasPorEstado,
                 'metasPorMes' => $metasPorMesView,
             ]);
         }
@@ -59,6 +65,8 @@ class MetaController extends Controller
             'anio' => $anio,
             'aniosDisponibles' => $aniosDisponibles,
             'metasCumplidas' => $metasCumplidas,
+            'metasPendientes' => $metasPendientes,
+            'metasPorEstado' => $metasPorEstado,
             'metasPorMes' => $metasPorMes,
             'metasPorAnio' => $metasPorAnio,
             'metasProgreso' => $metasProgreso,
@@ -113,18 +121,49 @@ class MetaController extends Controller
             ->where('estado', 'cumplida')
             ->count();
     }
+    /**
+     * Obtener las metas cumplidas en un año.
+     */
+    private function metasPendientes($anio)
+    {
+        return Meta::where('user_id', Auth::id())
+            ->whereYear('fecha', $anio)
+            ->where('estado', 'pendiente')
+            ->count();
+    }
+
+    private function metasPorEstado($anio)
+    {
+        // Consulta para obtener la cantidad de metas por estado
+        $metasPorEstado = Meta::selectRaw('estado, COUNT(*) as total')
+            ->whereYear('fecha', $anio)
+            ->where('user_id', Auth::id()) // Filtrar por el usuario logueado
+            ->groupBy('estado')
+            ->pluck('total', 'estado');
+
+// Asegurarse de incluir los estados pendientes y cumplidas con 0 por defecto
+        return collect(['pendiente' => 0, 'cumplida' => 0])->merge($metasPorEstado);
+    }
 
     /**
      * Obtener metas por mes.
      */
     private function metasPorMes($anio)
     {
-        return Meta::where('user_id', Auth::id())
+        $metasPorMes = Meta::selectRaw('MONTH(fecha) as mes, COUNT(*) as total')
+
             ->whereYear('fecha', $anio)
-            ->selectRaw('MONTH(fecha) as mes, COUNT(*) as total')
+            ->where('user_id', Auth::id()) // Filtramos por el ID del usuario logueado
             ->groupBy('mes')
             ->orderBy('mes')
             ->pluck('total', 'mes');
+
+        // Crear un array con 0 para todos los meses, si no hay datos para ese mes
+        $meses = collect(range(1, 12))->mapWithKeys(function ($mes) use ($metasPorMes) {
+            return [$mes => $metasPorMes->get($mes, 0)];
+        });
+
+        return $meses;
     }
 
     private function metasPorAnio()
@@ -136,6 +175,7 @@ class MetaController extends Controller
 
     }
 
+    //metas cumplidas
     private function metasProgreso()
     {
         // Obtener las metas cumplidas por mes

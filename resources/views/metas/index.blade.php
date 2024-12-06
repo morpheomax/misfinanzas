@@ -8,10 +8,10 @@
 
 
         <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
-        {{-- Sección: Formulario y Gráfico --}}
+        {{-- Sección: Formulario y Resultados --}}
         <section class="flex flex-col lg:flex-row gap-6 mb-6 ">
             <!-- Formulario -->
-            <div class="w-full   ">
+            <div class="w-full  md:w-1/2 ">
 
                 {{-- <h2 class="text-xl font-semibold mb-4 text-gray-800">Registrar un nuevo ingreso</h2> --}}
                 <div class="h-full">
@@ -20,11 +20,16 @@
                 </div>
             </div>
 
-            <!-- Gráfico -->
-            <div class="w-full">
+            <!-- Resultados -->
+            <div class="w-full md:w-1/2">
 
-                {{-- @include('components.metas.grafico-metas-mes', ['metasPorMes' => '$metasPorMes']) --}}
+                <div class="w-full md:1/2 flex gap-4 flex-grow justify-center">
 
+                    @include('components.metas.MetasCumplidas', ['metasCumplidas' => $metasCumplidas])
+                    @include('components.metas.MetasPendientes', ['metasPendientes' => $metasPendientes])
+
+                </div>
+                @include('components.metas.grafico-metas', ['metasPorMes' => $metasPorMes])
             </div>
 
         </section>
@@ -51,13 +56,8 @@
                     'anioSeleccionado' => $anio,
                 ])
             </div>
-            <div class="flex flex-col md:flex-row gap-4">
-                <!-- Resumen de Ingresos por Categoría y Acumulado Anual -->
-                <div class="w-full md:1/2 flex-grow">
+            <div class="flex flex-col gap-4">
 
-                    @include('components.metas.MetasCumplidas', ['metasCumplidas' => $metasCumplidas])
-
-                </div>
 
 
                 <div class="w-full md:1/2 flex-grow">

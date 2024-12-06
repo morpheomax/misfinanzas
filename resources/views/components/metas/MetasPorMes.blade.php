@@ -1,19 +1,24 @@
-<div class="bg-white shadow-lg rounded-lg p-6">
+<div class="bg-white shadow-lg rounded-2xl p-6">
     <h3 class="text-xl font-semibold text-gray-700">Metas por Mes</h3>
-    <table class="min-w-full mt-4 table-auto border-collapse">
-        <thead>
-            <tr>
-                <th class="px-4 py-2 border text-left">Mes</th>
-                <th class="px-4 py-2 border text-left">Total de Metas</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($metasPorMes as $mes => $total)
+    <!-- Contenedor responsivo -->
+    <div class="overflow-x-auto">
+        <table class="min-w-full mt-4 table-auto border-collapse">
+            <thead>
                 <tr>
-                    <td class="px-4 py-2 border">{{ $mes }}</td>
-                    <td class="px-4 py-2 border">{{ $total }}</td>
+                    @foreach ($metasPorMes as $mes => $total)
+                        <th class="px-4 py-2 border text-center whitespace-nowrap">
+                            {{ $mes }}
+                        </th>
+                    @endforeach
                 </tr>
-            @endforeach
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                <tr>
+                    @foreach ($metasPorMes as $total)
+                        <td class="px-4 py-2 border text-center">{{ $total }}</td>
+                    @endforeach
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </div>

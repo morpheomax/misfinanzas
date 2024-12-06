@@ -1,7 +1,8 @@
+<?php
 namespace App\Http\Controllers;
 
-use App\Models\Ingreso;
 use App\Models\Egreso;
+use App\Models\Ingreso;
 use App\Models\Meta;
 use Illuminate\Support\Facades\Auth;
 

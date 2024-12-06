@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CategoriaController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EgresoController;
 use App\Http\Controllers\IngresoController;
 use App\Http\Controllers\MetaController;
@@ -18,6 +19,7 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('egresos', EgresoController::class);
     Route::resource('categorias', CategoriaController::class);
     Route::resource('metas', MetaController::class);
+    Route::resource('dashboard', DashboardController::class);
 
     // Ruta para obtener las categorías según el tipo
     Route::get('/categorias/{tipo}', [CategoriaController::class, 'getCategoriasPorTipo']);
