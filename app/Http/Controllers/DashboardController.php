@@ -16,13 +16,15 @@ class DashboardController extends Controller
         $userId = Auth::id();
         $metas = Meta::where('user_id', $userId)->get();
 
-        // Obtener años disponibles de ingresos y egresos
+        // Obtener años disponibles de ingresos y egresos para el usuario logueado
         $años = DB::table('ingresos')
             ->selectRaw('YEAR(fecha) as anio')
+            ->where('user_id', $userId) // Filtrar por usuario
             ->groupBy('anio')
             ->union(
                 DB::table('egresos')
                     ->selectRaw('YEAR(fecha) as anio')
+                    ->where('user_id', $userId) // Filtrar por usuario
                     ->groupBy('anio')
             )
             ->orderBy('anio', 'desc')
@@ -33,7 +35,7 @@ class DashboardController extends Controller
         $anio = $request->input('anio');
 
         // Totales generales de ingresos
-        $ingresosTotales = Ingreso::query();
+        $ingresosTotales = Ingreso::where('user_id', $userId);
 
         if ($mes) {
             $ingresosTotales->whereMonth('fecha', $mes);
@@ -41,17 +43,14 @@ class DashboardController extends Controller
 
         if ($anio) {
             $ingresosTotales->whereYear('fecha', $anio);
+        } else {
+            $ingresosTotales->whereYear('fecha', now()->year);
         }
 
-        $ingresosTotales = $ingresosTotales->sum('monto');
+        $ingresosTotales = $ingresosTotales->sum('monto') ?? 0;
 
         // Totales generales de egresos
-        // $egresosTotales = DB::table('egresos')
-        //     ->whereYear('fecha', request('anio'))
-        //     ->whereMonth('fecha', request('mes'))
-        //     ->sum('monto');
-
-        $egresosTotales = Egreso::query();
+        $egresosTotales = Egreso::where('user_id', $userId);
 
         if ($mes) {
             $egresosTotales->whereMonth('fecha', $mes);
@@ -59,9 +58,11 @@ class DashboardController extends Controller
 
         if ($anio) {
             $egresosTotales->whereYear('fecha', $anio);
+        } else {
+            $egresosTotales->whereYear('fecha', now()->year);
         }
 
-        $egresosTotales = $egresosTotales->sum('monto');
+        $egresosTotales = $egresosTotales->sum('monto') ?? 0;
 
         // Calcular el saldo general (ingresos - egresos)
         $saldoGeneral = $ingresosTotales - $egresosTotales;
@@ -81,15 +82,37 @@ class DashboardController extends Controller
         // Datos de metas
         $metasTotales = Meta::where('user_id', $userId)->count();
         $metasAhorrado = Meta::where('user_id', $userId)->sum('monto_ahorrado');
-        $progresoMetas = Meta::where('user_id', $userId)
-            ->select('nombre', 'estado', 'monto', 'monto_ahorrado')
-            ->get()
-            ->map(function ($meta) {
+        // $progresoMetas = $metasTotales > 0 ? Meta::where('user_id', $userId)
+        //     ->select('nombre', 'estado', 'monto', 'monto_ahorrado')
+
+        //     ->get()
+
+        //     ->map(function ($meta) {
+        //         $progreso = $meta->monto > 0 ? ($meta->monto_ahorrado / $meta->monto) * 100 : 0;
+        //         return [
+        //             'nombre' => $meta->nombre,
+        //             'progreso' => $progreso,
+        //             'estado' => $meta->estado,
+        //         ];
+        //     }) : collect([]);
+
+        $estadoFiltro = request()->get('estado'); // Captura filtro desde la solicitud
+        $query = Meta::where('user_id', $userId);
+
+        if ($estadoFiltro) {
+            $query->where('estado', $estadoFiltro); // Filtra por estado si se proporciona
+        }
+
+        $progresoMetas = $query
+            ->select('nombre', 'estado', 'monto', 'monto_ahorrado', 'created_at') // Incluye created_at si es necesario para mostrar el año
+            ->paginate(4) // Paginación directa
+            ->through(function ($meta) { // Mapea directamente con `through`
                 $progreso = $meta->monto > 0 ? ($meta->monto_ahorrado / $meta->monto) * 100 : 0;
                 return [
                     'nombre' => $meta->nombre,
                     'progreso' => $progreso,
                     'estado' => $meta->estado,
+                    'fecha' => $meta->created_at->format('Y'), // Muestra el año si es necesario
                 ];
             });
 
@@ -142,10 +165,11 @@ class DashboardController extends Controller
     // Calcular el progreso de la meta
     private function getProgresoAttribute($meta)
     {
-        if ($meta->monto > 0) {
-            return ($meta->monto_ahorrado / $meta->monto) * 100;
+        if (!$meta || $meta->monto > 0) {
+            return 0;
         }
-        return 0;
+        return ($meta->monto_ahorrado / $meta->monto) * 100;
+
     }
 
     // Calcular ingresos o egresos del mes actual
@@ -191,10 +215,20 @@ class DashboardController extends Controller
     // Obtener totales por categorías (ingresos o egresos)
     private function totalesPorCategoria($model, $userId, $mes = null, $anio = null)
     {
-        return $model::where('user_id', $userId)
-            ->whereMonth('fecha', $mes ?? now()->month)
-            ->whereYear('fecha', $anio ?? now()->year)
-            ->selectRaw('categoria, SUM(monto) as total')
+        $query = $model::where('user_id', $userId);
+
+        // Aplicar filtro de año si está definido
+        if ($anio) {
+            $query->whereYear('fecha', $anio);
+        }
+
+        // Aplicar filtro de mes solo si está definido
+        if ($mes) {
+            $query->whereMonth('fecha', $mes);
+        }
+
+        // Agrupar y calcular el total por categoría
+        return $query->selectRaw('categoria, SUM(monto) as total')
             ->groupBy('categoria')
             ->get();
     }

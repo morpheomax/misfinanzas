@@ -1,5 +1,5 @@
 <div class="bg-white p-4 rounded-lg shadow-md">
-    <h3 class="text-xl font-semibold text-gray-700 mb-4">Últimos Movimientos</h3>
+    <h3 class="text-xl font-semibold text-gray-700 mb-4">Últimos Movimientos </h3>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <!-- Últimos ingresos -->

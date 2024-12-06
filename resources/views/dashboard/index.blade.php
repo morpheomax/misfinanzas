@@ -36,13 +36,13 @@
         </div>
         <div class="container mx-auto grid grid-cols-1 md:grid-cols-2  gap-6 py-6">
             @include('components.dashboard.resumenMensual', ['años' => $años])
-            @include('components.dashboard.progresoMetas')
+            @include('components.dashboard.progresoMetas', ['años' => $años])
         </div>
         <div class="container mx-auto grid grid-cols-1 gap-6 py-6">
-            @include('components.dashboard.categorias')
+            @include('components.dashboard.categorias', ['años' => $años])
         </div>
         <div class="container mx-auto grid grid-cols-1 gap-6 py-6">
-            @include('components.dashboard.ultimosMovimientos')
+            @include('components.dashboard.ultimosMovimientos', ['años' => $años])
         </div>
     </div>
 @endsection
