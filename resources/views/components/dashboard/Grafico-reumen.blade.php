@@ -1,4 +1,4 @@
-<div class="w-full mx-auto bg-white shadow-lg rounded-2xl p-4">
+<div class="w-full mx-auto bg-white shadow-lg rounded-2xl p-4 min-h-[400px]">
     <canvas id="graficoMensual" class="w-full h-full"></canvas>
 </div>
 
@@ -82,5 +82,16 @@
                 }
             }
         });
+
+        // Ajustar el gráfico cuando se cambie el tamaño de la ventana
+        window.addEventListener('resize', function() {
+            graficoSaldoAcumulativo.resize();
+        });
     });
 </script>
+<style>
+    #graficoSaldoAcumulativo {
+        width: 100%;
+        height: 100%;
+    }
+</style>

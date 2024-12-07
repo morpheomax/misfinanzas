@@ -1,4 +1,4 @@
-<div class="w-full mx-auto bg-white shadow-lg rounded-2xl p-4 aspect-video">
+<div class="w-full mx-auto bg-white shadow-lg rounded-2xl p-4 aspect-video min-h-[400px]">
     <canvas id="graficoSaldoAcumulativo"></canvas>
 </div>
 
@@ -83,6 +83,6 @@
 <style>
     #graficoSaldoAcumulativo {
         width: 100%;
-        height: 100%;
+        height: 200%;
     }
 </style>
