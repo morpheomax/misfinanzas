@@ -35,6 +35,21 @@
             @include('components.dashboard.saldoGeneral')
         </div>
         <div class="container mx-auto grid grid-cols-1 md:grid-cols-2  gap-6 py-6">
+            @include('components.dashboard.Grafico-reumen', [
+                'totalesMensuales' => $totalesMensuales,
+                'anio' => $anio,
+            ])
+            @include('components.dashboard.Grafico-resumen-acumulado', [
+                'totalesMensuales' => $totalesMensuales,
+                'anio' => $anio,
+            ])
+            @include('components.dashboard.Grafico-acumulado', [
+                'totalesMensuales' => $totalesMensuales,
+                'anio' => $anio,
+            ])
+        </div>
+        <div class="container mx-auto grid grid-cols-1 md:grid-cols-2  gap-6 py-6">
+
             @include('components.dashboard.resumenMensual', ['años' => $años])
             @include('components.dashboard.progresoMetas', ['años' => $años])
         </div>

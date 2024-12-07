@@ -75,6 +75,8 @@ class DashboardController extends Controller
         // Resumen mensual por año (aplicando el filtro de año)
         $resumenMensual = $this->resumenMensual($userId, $anio, $mes);
 
+        $totalesMensuales = collect($resumenMensual);
+
         // Obtener la primera meta (ajustar si se permiten múltiples metas)
         $meta = Meta::where('user_id', $userId)->first(); // Ajustar si se permiten múltiples metas
 
@@ -82,19 +84,6 @@ class DashboardController extends Controller
         // Datos de metas
         $metasTotales = Meta::where('user_id', $userId)->count();
         $metasAhorrado = Meta::where('user_id', $userId)->sum('monto_ahorrado');
-        // $progresoMetas = $metasTotales > 0 ? Meta::where('user_id', $userId)
-        //     ->select('nombre', 'estado', 'monto', 'monto_ahorrado')
-
-        //     ->get()
-
-        //     ->map(function ($meta) {
-        //         $progreso = $meta->monto > 0 ? ($meta->monto_ahorrado / $meta->monto) * 100 : 0;
-        //         return [
-        //             'nombre' => $meta->nombre,
-        //             'progreso' => $progreso,
-        //             'estado' => $meta->estado,
-        //         ];
-        //     }) : collect([]);
 
         $estadoFiltro = request()->get('estado'); // Captura filtro desde la solicitud
         $query = Meta::where('user_id', $userId);
@@ -104,15 +93,19 @@ class DashboardController extends Controller
         }
 
         $progresoMetas = $query
-            ->select('nombre', 'estado', 'monto', 'monto_ahorrado', 'created_at') // Incluye created_at si es necesario para mostrar el año
-            ->paginate(4) // Paginación directa
-            ->through(function ($meta) { // Mapea directamente con `through`
+            ->select('nombre', 'estado', 'monto', 'monto_ahorrado', 'created_at')
+            ->whereYear('fecha', $anio ?? now()->year)
+            ->whereMonth('fecha', $mes ?? now()->month)
+            ->paginate(4)
+            ->through(function ($meta) use ($anio, $mes) { // Pasar $anio y $mes a la función
                 $progreso = $meta->monto > 0 ? ($meta->monto_ahorrado / $meta->monto) * 100 : 0;
                 return [
                     'nombre' => $meta->nombre,
                     'progreso' => $progreso,
                     'estado' => $meta->estado,
-                    'fecha' => $meta->created_at->format('Y'), // Muestra el año si es necesario
+                    'fecha' => $meta->created_at->format('Y'),
+                    'anio' => $anio, // Agregar el año
+                    'mes' => $mes, // Agregar el mes
                 ];
             });
 
@@ -143,10 +136,12 @@ class DashboardController extends Controller
 
         return view('dashboard.index', compact(
             'años',
+            'anio',
             'ingresosTotales',
             'egresosTotales',
             'saldoGeneral',
             'resumenMensual',
+            'totalesMensuales',
             'progresoMetas',
             'ingresosMes',
             'egresosMes',

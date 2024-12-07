@@ -1,19 +1,6 @@
-{{-- <div class="bg-white shadow-md rounded-lg p-4 mb-4">
-    <h2 class="text-lg font-semibold">Progreso de Metas</h2>
-    @foreach ($progresoMetas as $meta)
-        <div class="mb-2">
-            <p><strong>{{ $meta['nombre'] }}</strong></p>
-            <div class="w-full bg-gray-200 rounded-full h-4">
-                <div class="bg-green-500 h-4 rounded-full" style="width: {{ $meta['progreso'] }}%;">
-                </div>
-            </div>
-            <p class="text-sm">Estado: {{ ucfirst($meta['estado']) }}</p>
-        </div>
-    @endforeach
-</div> --}}
+<div class="bg-white shadow-lg rounded-lg p-6 mb-6">
+    <h2 class="text-2xl font-bold text-gray-800 mb-4">Progreso de Metas {{ $anio }} </h2>
 
-<div class="bg-white shadow-lg rounded-lg p-6">
-    <h2 class="text-2xl font-bold text-gray-800 mb-4">Progreso de Metas</h2>
 
     <!-- Filtro por estado -->
     <form method="GET" class="mb-4 flex gap-2">
