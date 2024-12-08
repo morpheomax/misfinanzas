@@ -19,8 +19,15 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'lastname',
         'email',
         'password',
+        'country',
+        'city',
+        'role',
+        'is_premium',
+        'subscription_end_date',
+        'is_active',
     ];
 
     /**
@@ -38,13 +45,14 @@ class User extends Authenticatable
      *
      * @return array<string, string>
      */
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
-    }
+
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'subscription_end_date' => 'datetime',
+        'is_premium' => 'boolean',
+        'is_active' => 'boolean',
+    ];
+
     public function ingresos()
     {
         return $this->hasMany(Ingreso::class);
@@ -63,6 +71,15 @@ class User extends Authenticatable
     public function categorias()
     {
         return $this->hasMany(Categoria::class);
+    }
+    public function hasActiveSubscription(): bool
+    {
+        return $this->is_premium && $this->subscription_end_date && $this->subscription_end_date->isFuture();
+    }
+
+    public function isActive(): bool
+    {
+        return $this->is_active;
     }
 
 }

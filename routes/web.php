@@ -5,6 +5,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EgresoController;
 use App\Http\Controllers\IngresoController;
 use App\Http\Controllers\MetaController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -15,6 +16,16 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::middleware(['auth'])->group(function () {
+
+    // Route::get('/user', [UserController::class, 'index'])->name('user.index');
+    // Route::get('/user/{user}/edit', [UserController::class, 'edit'])->name('user.edit');
+    // Route::get('/user/{user}', [UserController::class, 'show'])->name('user.show');
+    // Route::put('/user/{user}', [UserController::class, 'update'])->name('user.update');
+    Route::get('/user/{user}', [UserController::class, 'show'])->name('user.show');
+    Route::put('/user/{user}/password', [UserController::class, 'changePassword'])->name('user.changePassword');
+    Route::put('/user/{user}/deactivate', [UserController::class, 'deactivate'])->name('user.deactivate');
+
+    Route::resource('user', UserController::class);
     Route::resource('ingresos', IngresoController::class);
     Route::resource('egresos', EgresoController::class);
     Route::resource('categorias', CategoriaController::class);
