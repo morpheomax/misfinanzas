@@ -2,8 +2,9 @@
     "private": true,
     "type": "module",
     "scripts": {
+        "dev": "vite",
         "build": "vite build",
-        "dev": "vite"
+        "preview": "vite preview"
     },
     "devDependencies": {
         "autoprefixer": "^10.4.20",
@@ -16,6 +17,7 @@
     },
     "dependencies": {
         "chart.js": "^4.4.6",
+        "sass": "^1.82.0",
         "sweetalert2": "^11.14.5"
     }
 }

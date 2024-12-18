@@ -8,6 +8,7 @@
             <h1 class="text-3xl font-semibold text-gray-900 dark:text-white">Dashboard</h1>
         </header>
 
+
         <!-- Sección de enlaces -->
         <section class="flex flex-wrap gap-4 py-6">
             <a href="{{ route('ingresos.index') }}"
@@ -22,6 +23,7 @@
                 class="px-4 py-2 bg-green-500 text-white rounded-lg shadow hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2">
                 Metas
             </a>
+
         </section>
 
         <!-- Sección de componentes -->
@@ -29,11 +31,12 @@
             @include('components.dashboard.filtro', [
                 'años' => $años,
             ])
-            @include('components.dashboard.ingresosTotales', [
+            @include('components.dashboard.IngresosTotales', [
                 'ingresosTotales' => $ingresosTotales,
             ])
-            @include('components.dashboard.egresosTotales')
-            @include('components.dashboard.saldoGeneral')
+            @include('components.dashboard.EgresosTotales')
+            @include('components.dashboard.SaldoGeneral')
+
         </section>
 
         <!-- Sección de gráficos -->
@@ -50,22 +53,22 @@
                 'totalesMensuales' => $totalesMensuales,
                 'anio' => $anio,
             ])
+            @include('components.dashboard.ProgresoMetas', ['años' => $años])
         </section>
 
         <!-- Sección de resumen mensual y progreso de metas -->
-        <section class="grid grid-cols-1 md:grid-cols-2 gap-6 py-6">
-            @include('components.dashboard.resumenMensual', ['años' => $años])
-            @include('components.dashboard.progresoMetas', ['años' => $años])
+        <section class="grid grid-cols-1 gap-6 py-6">
+            @include('components.dashboard.ResumenMensual', ['años' => $años])
         </section>
 
         <!-- Sección de categorías -->
         <section class="grid grid-cols-1 gap-6 py-6">
-            @include('components.dashboard.categorias', ['años' => $años])
+            @include('components.dashboard.Categorias', ['años' => $años])
         </section>
 
         <!-- Sección de últimos movimientos -->
         <section class="grid grid-cols-1 gap-6 py-6">
-            @include('components.dashboard.ultimosMovimientos', ['años' => $años])
+            @include('components.dashboard.UltimosMovimientos', ['años' => $años])
         </section>
     </main>
 @endsection

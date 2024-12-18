@@ -1,8 +1,8 @@
 <div class="bg-white p-4 rounded-lg shadow-md">
-    <h3 class="text-xl font-semibold text-gray-700 mb-4">Filtros</h3>
+    <h3 class="text-xl font-semibold text-gray-700 mb-4">Filtro por Ano y Mes</h3>
 
     <form action="{{ route('dashboard.index') }}" method="GET">
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2  gap-4">
             <!-- Filtro de Año -->
             <div class="flex flex-col">
                 <label for="anio" class="text-sm font-medium text-gray-600">Año</label>
@@ -43,8 +43,8 @@
                     @endforeach
                 </select>
             </div>
-        </div>
 
+        </div>
         <div class="mt-4">
             <button type="submit" class="w-full bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700">
                 Aplicar Filtro
