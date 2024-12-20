@@ -8,6 +8,22 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
+    <!-- Google Analytics Tag -->
+    {{-- @if (env('APP_ENV') === 'production') --}}
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-YKJK1T89V3"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+        gtag('js', new Date());
+
+        gtag('config', 'G-YKJK1T89V3');
+    </script>
+    {{-- @endif --}}
+
 
     <title>@yield('title', config('app.name', 'Laravel'))</title>
 
@@ -17,6 +33,7 @@
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite(['resources/js/app.js'])
 
 
     {{-- Livewire  --}}

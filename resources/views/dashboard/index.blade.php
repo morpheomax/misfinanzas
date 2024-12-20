@@ -5,7 +5,7 @@
 @section('content')
     <main class="container mx-auto p-6 ">
         <header class="flex justify-around items-center mb-6 ">
-            <h1 class="text-3xl font-semibold text-gray-200 dark:text-gray-700">Tus Resultados</h1>
+            <h1 class="text-3xl font-semibold text-gray-700 dark:text-gray-200">Tus Resultados</h1>
 
 
         </header>

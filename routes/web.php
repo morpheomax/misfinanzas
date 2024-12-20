@@ -45,5 +45,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/ingresos/{ingreso}/duplicate', [IngresoController::class, 'duplicate'])->name('ingresos.duplicate');
 // Ruta para duplicar egresos
     Route::post('/egresos/{egreso}/duplicate', [EgresoController::class, 'duplicate'])->name('egresos.duplicate');
+//  Ruta para genera Robots
+    Route::get('robots.txt', function () {
+        return response()->file(public_path('robots.txt'));
+    });
 
 });

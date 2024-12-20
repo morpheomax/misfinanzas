@@ -5,7 +5,11 @@
 @section('content')
     <div class="container mx-auto p-6">
 
+        <header class="flex justify-around items-center mb-6 ">
+            <h1 class="text-3xl font-semibold text-gray-700 dark:text-gray-200">Registra tus Egresos</h1>
 
+
+        </header>
 
         <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
         {{-- Sección: Formulario y Gráfico --}}

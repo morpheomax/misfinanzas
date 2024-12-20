@@ -12,5 +12,5 @@
         </a>
     </div>
     <div class="absolute inset-0 opacity-60 bg-cover bg-center"
-        style="background-image: url('{{ asset('images/hero_image.jpg') }}');"></div>
+        style="background-image: url('{{ asset('images/hero_image.webp') }}');"></div>
 </div>
