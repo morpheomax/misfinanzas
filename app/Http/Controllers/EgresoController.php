@@ -283,4 +283,21 @@ class EgresoController extends Controller
             'icon' => 'warning',
         ]);
     }
+    // Duplicar egreso
+    public function duplicate(Egreso $egreso)
+    {
+        $this->authorize('create', $egreso);
+
+        $newEgreso = $egreso->replicate();
+        $newEgreso->fecha = now(); // Actualiza la fecha si es necesario
+        $newEgreso->save();
+
+        // Redirige con el mensaje de éxito
+        return redirect()->route('egresos.index')->with('swal', [
+            'title' => 'Atención!',
+            'text' => 'Egreso duplicado correctamente.',
+            'icon' => 'success',
+        ]);
+    }
+
 }

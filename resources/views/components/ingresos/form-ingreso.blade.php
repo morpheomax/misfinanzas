@@ -5,14 +5,26 @@
         <!-- Selector de Tipo -->
         <div class="mb-4">
             <label for="tipo" class="block text-sm font-medium text-gray-700">Tipo de Ingreso</label>
-            <select name="tipo"
-                id="tipo"class="mt-2 block w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+            <select name="tipo" id="tipo"
+                class="mt-2 block w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                 required>
                 @error('tipo')
                     <div class="text-red-500 text-xs mt-2">{{ $message }}</div>
                 @enderror
                 <option value="">Seleccione un tipo</option>
             </select>
+
+            <!-- Enlace para agregar nueva categoría -->
+            <div class="mt-2 text-sm">
+                <a href="{{ route('categorias.index') }}"
+                    class="text-blue-600 hover:underline flex items-center space-x-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    <span>¿Necesitas agregar una nueva categoría? Haz clic aquí.</span>
+                </a>
+            </div>
         </div>
 
         <!-- Selector de Nombres -->
@@ -53,7 +65,7 @@
     </div>
     <div class="flex justify-center mt-6">
         <button type="submit"
-            class="w-full mx-auto  bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-md transition duration-300 ease-in-out">
+            class="w-full mx-auto bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-md transition duration-300 ease-in-out">
             Registrar
         </button>
     </div>
@@ -115,7 +127,5 @@
             monto,
             fecha
         });
-
-
     });
 </script>

@@ -24,6 +24,7 @@
                             <div class="flex space-x-4">
                                 <a href="{{ route('egresos.edit', $egreso->id) }}"
                                     class="text-yellow-500 hover:underline">Editar</a>
+                                @include('components.egresos.duplicar_egreso', ['egreso' => $egreso])
                                 <form action="{{ route('egresos.destroy', $egreso->id) }}" method="POST"
                                     id="form-eliminar-{{ $egreso->id }}">
                                     @csrf
@@ -55,6 +56,7 @@
                     <div class="flex space-x-2">
                         <a href="{{ route('egresos.edit', $egreso->id) }}"
                             class="text-yellow-500 text-sm hover:underline">Editar</a>
+                        @include('components.egresos.duplicar_egreso', ['egreso' => $egreso])
                         <form action="{{ route('egresos.destroy', $egreso->id) }}" method="POST"
                             id="form-eliminar-{{ $egreso->id }}">
                             @csrf

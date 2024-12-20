@@ -41,5 +41,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/api/tipo/egreso', [CategoriaController::class, 'getTiposEgreso']);
 // Ruta para obtener los nombres según el tipo seleccionado
     Route::get('/api/tipo/{tipo}/nombre', [CategoriaController::class, 'getNombresPorTipo']);
+// Ruta para duplicar ingresos
+    Route::post('/ingresos/{ingreso}/duplicate', [IngresoController::class, 'duplicate'])->name('ingresos.duplicate');
+// Ruta para duplicar egresos
+    Route::post('/egresos/{egreso}/duplicate', [EgresoController::class, 'duplicate'])->name('egresos.duplicate');
 
 });

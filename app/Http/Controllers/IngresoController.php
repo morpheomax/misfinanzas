@@ -279,10 +279,10 @@ class IngresoController extends Controller
         $this->authorize('create', $ingreso);
 
         $newIngreso = $ingreso->replicate();
-        $newIngreso->fecha = now(); // Actualizar la fecha si es necesario
+        $newIngreso->fecha = now(); // Actualiza la fecha si es necesario
         $newIngreso->save();
 
-        //return redirect()->route('ingresos.index')->with('success', 'Ingreso duplicado correctamente.');
+        // Redirige con el mensaje de éxito
         return redirect()->route('ingresos.index')->with('swal', [
             'title' => 'Atención!',
             'text' => 'Ingreso duplicado correctamente.',

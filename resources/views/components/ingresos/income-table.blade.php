@@ -1,91 +1,5 @@
-{{-- <div>
-    <!-- Versión Desktop: Tabla -->
-    <div class="hidden md:block">
-        <table class="min-w-full table-auto bg-white rounded-2xl overflow-hidden shadow-md">
-            <thead class="bg-indigo-600 text-white">
-                <tr>
-                    <th class="px-6 py-3 text-left text-sm font-medium">#</th>
-                    <th class="px-6 py-3 text-left text-sm font-medium">Nombre</th>
-                    <th class="px-6 py-3 text-left text-sm font-medium">Categoría</th>
-                    <th class="px-6 py-3 text-left text-sm font-medium">Monto</th>
-                    <th class="px-6 py-3 text-left text-sm font-medium">Fecha</th>
-                    <th class="px-6 py-3 text-left text-sm font-medium">Acciones</th>
-                </tr>
-            </thead>
-            <tbody class="text-sm text-gray-700">
-                @foreach ($ingresos as $ingreso)
-                    <tr class="border-b hover:bg-gray-50">
-                        <td class="px-6 py-4">{{ $loop->iteration }}</td>
-                        <td class="px-6 py-4">{{ $ingreso->nombre }}</td>
-                        <td class="px-6 py-4">{{ $ingreso->categoria }}</td>
-                        <td class="px-6 py-4">{{ '$' . number_format($ingreso->monto, 0, '', '.') }}</td>
-                        <td class="px-6 py-4">{{ \Carbon\Carbon::parse($ingreso->fecha)->format('d/m/Y') }}</td>
-                        <td class="px-6 py-4">
-                            <div class="flex space-x-4">
-
-                                <a href="{{ route('ingresos.edit', $ingreso->id) }}"
-                                    class="text-yellow-500 hover:underline">Editar</a>
-                                <form action="{{ route('ingresos.destroy', $ingreso->id) }}" method="POST"
-                                    style="display: inline;">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="text-red-500 hover:underline"
-                                        onclick="return confirm('¿Estás seguro de eliminar este ingreso?')">
-                                        Eliminar
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-
-        <!-- Paginación de escritorio -->
-        <div class="mt-4 ">
-            {{ $ingresos->links() }}
-        </div>
-    </div>
-
-    <!-- Versión Mobile: Tarjetas -->
-    <div class="block md:hidden space-y-4">
-        @foreach ($ingresos as $ingreso)
-            <div class="bg-white rounded-2xl shadow-md p-4">
-                <div class="flex justify-between items-center mb-2">
-                    <span class="font-semibold text-gray-800">#{{ $loop->iteration }}</span>
-                    <div class="flex space-x-2">
-
-                        <a href="{{ route('ingresos.edit', $ingreso->id) }}"
-                            class="text-yellow-500 text-sm hover:underline">Editar</a>
-                        <form action="{{ route('ingresos.destroy', $ingreso->id) }}" method="POST"
-                            style="display: inline;">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="text-red-500 text-sm hover:underline"
-                                onclick="return confirm('¿Estás seguro de eliminar este ingreso?')">
-                                Eliminar
-                            </button>
-                        </form>
-                    </div>
-                </div>
-                <p class="text-gray-700"><span class="font-medium">Nombre:</span> {{ $ingreso->nombre }}</p>
-                <p class="text-gray-700"><span class="font-medium">Categoría:</span> {{ $ingreso->categoria }}</p>
-                <p class="text-gray-700"><span class="font-medium">Monto:</span>
-                    {{ '$' . number_format($ingreso->monto, 0, '', '.') }}</p>
-                <p class="text-gray-700"><span class="font-medium">Fecha:</span>
-                    {{ \Carbon\Carbon::parse($ingreso->fecha)->format('d/m/Y') }}</p>
-            </div>
-        @endforeach
-
-        <!-- Paginación móvil -->
-        <div class="mt-4 ">
-            {{ $ingresos->links() }}
-        </div>
-    </div>
-</div> --}}
-
-
 <div>
+
     <!-- Versión Desktop: Tabla -->
     <div class="hidden md:block">
         <table class="min-w-full table-auto bg-white rounded-2xl overflow-hidden shadow-md">
@@ -111,6 +25,10 @@
                             <div class="flex space-x-4">
                                 <a href="{{ route('ingresos.edit', $ingreso->id) }}"
                                     class="text-yellow-500 hover:underline">Editar</a>
+                                @include('components.ingresos.duplicar_ingreso', ['ingreso' => $ingreso])
+
+
+
                                 <form action="{{ route('ingresos.destroy', $ingreso->id) }}" method="POST"
                                     id="form-eliminar-{{ $ingreso->id }}">
                                     @csrf
@@ -119,8 +37,11 @@
                                         data-id="{{ $ingreso->id }}">
                                         Eliminar
                                     </button>
+
+
                                 </form>
                             </div>
+
                         </td>
                     </tr>
                 @endforeach
@@ -142,6 +63,7 @@
                     <div class="flex space-x-2">
                         <a href="{{ route('ingresos.edit', $ingreso->id) }}"
                             class="text-yellow-500 text-sm hover:underline">Editar</a>
+                        @include('components.ingresos.duplicar_ingreso', ['ingreso' => $ingreso])
                         <form action="{{ route('ingresos.destroy', $ingreso->id) }}" method="POST"
                             id="form-eliminar-{{ $ingreso->id }}">
                             @csrf

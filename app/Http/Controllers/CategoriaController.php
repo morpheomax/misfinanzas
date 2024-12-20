@@ -118,8 +118,12 @@ class CategoriaController extends Controller
             'tipo' => $request->tipo,
             'nombre' => $request->nombre,
         ]);
-
-        return redirect()->route('categorias.index')->with('success', '¡Categoría actualizada exitosamente!');
+        // Redirige con el mensaje de éxito
+        return redirect()->route('categorias.index')->with('swal', [
+            'title' => 'Atención!',
+            'text' => '¡Categoría actualizada exitosamente!',
+            'icon' => 'success',
+        ]);
     }
 
     /**
@@ -132,7 +136,11 @@ class CategoriaController extends Controller
         // Eliminar la categoría
         $categoria->delete();
 
-        return redirect()->route('categorias.index')->with('success', '¡Categoría eliminada exitosamente!');
+        return redirect()->route('categorias.index')->with('swal', [
+            'title' => 'Atención!',
+            'text' => '¡Categoría eliminada exitosamente!',
+            'icon' => 'success',
+        ]);
     }
 
     /**

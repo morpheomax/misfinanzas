@@ -17,16 +17,18 @@
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    @vite(['resources/js/app.js'])
 
-    {{--  --}}
 
+    {{-- Livewire  --}}
+    @livewireStyles
 </head>
 
 <body class="flex flex-col min-h-screen bg-super-blanco">
 
     <!-- Navbar -->
+
     @include('components.navbar')
+
 
     <!-- Contenido Principal -->
     <main class="flex-1">
@@ -34,20 +36,22 @@
         @if (session('swal'))
             <script>
                 document.addEventListener('DOMContentLoaded', function() {
-                    Swal.fire({
-                        title: "{{ session('swal')['title'] }}",
-                        text: "{{ session('swal')['text'] }}",
-                        icon: "{{ session('swal')['icon'] }}",
-                        timer: 3000,
-                        timerProgressBar: true, // Muestra barra de progreso
-                        toast: true, // Aparece como un toast en lugar de una ventana modal
-                        position: 'top-center', // Posición en la esquina superior derecha
-                        showConfirmButton: false
-                    });
-
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            title: "{{ session('swal')['title'] }}",
+                            text: "{{ session('swal')['text'] }}",
+                            icon: "{{ session('swal')['icon'] }}",
+                            timer: 3000,
+                            timerProgressBar: true, // Muestra barra de progreso
+                            toast: true, // Aparece como un toast en lugar de una ventana modal
+                            position: 'top-center', // Posición en la esquina superior derecha
+                            showConfirmButton: false
+                        });
+                    }
                 });
             </script>
         @endif
+
         {{-- Fin de alertas --}}
 
         @yield('content')
@@ -56,6 +60,8 @@
     <!-- Footer -->
     @include('components.footer')
 
+    {{-- Livewire --}}
+    @livewireScripts
     <!-- Scripts Globales -->
     <script src="{{ asset('js/app.js') }}"></script>
 </body>
